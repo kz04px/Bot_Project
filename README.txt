@@ -30,5 +30,5 @@ Controls:
    rb  - Drag
    sw  - Zoom
 
-By:
+Author:
   Twipply
