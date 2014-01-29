@@ -8,6 +8,9 @@ Description:
   Bots travel through the world in search of pellets to provide energy.
   A new generation is spawned when sufficiently low bot numbers are reached.
 
+Platform:
+  Windows
+
 Controls:
   Keyboard:
    1   - No tool
