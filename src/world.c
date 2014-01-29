@@ -3,8 +3,8 @@
 int World_Init(world* Our_World)
 {
   // Normal
-  Our_World->Width = 96; // 30
-  Our_World->Height = 54; // 20
+  Our_World->Width = 96;
+  Our_World->Height = 54;
   Our_World->Frame = 0;
   Our_World->Generation = 0;
   Our_World->Time_Seed = time(0);
@@ -34,22 +34,10 @@ int World_Init(world* Our_World)
   Our_World->Max_Pellets = 512;
   Our_World->Pellets = (pellet*) malloc(Our_World->Max_Pellets*sizeof(pellet));
 
-  // Create parents FIXME: This is awful
   int p;
   for(p = 0; p < Our_World->Num_Parents; ++p)
   {
     Bot_Create(&Our_World->Bot_Parents[p], RAND_BETWEEN(0, Our_World->Width), RAND_BETWEEN(0, Our_World->Height));
-    /*
-    Our_World->Bot_Parents[p].Eyes = (eye*) malloc(3*sizeof(eye));
-    Our_World->Bot_Parents[p].Spikes = (spike*) malloc(1*sizeof(spike));
-    Our_World->Bot_Parents[p].NN.Layer_Sizes = (int*) malloc(3*sizeof(int));
-    Our_World->Bot_Parents[p].NN.Layer_Sizes[0] = 12;
-    Our_World->Bot_Parents[p].NN.Layer_Sizes[1] = 7;
-    Our_World->Bot_Parents[p].NN.Layer_Sizes[2] = 3;
-    printf("Before: %i\n", Our_World->Bot_Parents[p].NN);
-    NN_Create(&Our_World->Bot_Parents[p].NN);
-    printf("After:  %i\n", Our_World->Bot_Parents[p].NN);
-    */
   }
 
   rand();

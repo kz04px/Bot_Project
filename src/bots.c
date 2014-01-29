@@ -391,44 +391,44 @@ int Bot_Dump(bot* Our_Bot)
     return FALSE;
 
   // General
-  fprintf(Our_File, "Energy: %i (%i)\n", Our_Bot->Energy, &Our_Bot->Energy);
-  fprintf(Our_File, "Age: %i (%i)\n", Our_Bot->Age, &Our_Bot->Age);
-  fprintf(Our_File, "Dead: %i (%i)\n", Our_Bot->Dead, &Our_Bot->Dead);
-  fprintf(Our_File, "x: %.4g (%i)\n", Our_Bot->x, &Our_Bot->x);
-  fprintf(Our_File, "y: %.4g (%i)\n", Our_Bot->y, &Our_Bot->y);
-  fprintf(Our_File, "r: %.4g (%i)\n", Our_Bot->r, &Our_Bot->r);
-  fprintf(Our_File, "Size: %.4g (%i)\n", Our_Bot->Size, &Our_Bot->Size);
-  fprintf(Our_File, "Turn_Rate: %.4g (%i)\n", Our_Bot->Turn_Rate, &Our_Bot->Turn_Rate);
-  fprintf(Our_File, "Red: %.4g (%i)\n", Our_Bot->Red, &Our_Bot->Red);
-  fprintf(Our_File, "Green: %.4g (%i)\n", Our_Bot->Green, &Our_Bot->Green);
-  fprintf(Our_File, "Blue: %.4g (%i)\n", Our_Bot->Blue, &Our_Bot->Blue);
+  fprintf(Our_File, "Energy: %i (%p)\n", Our_Bot->Energy, (void*)&Our_Bot->Energy);
+  fprintf(Our_File, "Age: %i (%p)\n", Our_Bot->Age, (void*)&Our_Bot->Age);
+  fprintf(Our_File, "Dead: %i (%p)\n", Our_Bot->Dead, (void*)&Our_Bot->Dead);
+  fprintf(Our_File, "x: %.4g (%p)\n", Our_Bot->x, (void*)&Our_Bot->x);
+  fprintf(Our_File, "y: %.4g (%p)\n", Our_Bot->y, (void*)&Our_Bot->y);
+  fprintf(Our_File, "r: %.4g (%p)\n", Our_Bot->r, (void*)&Our_Bot->r);
+  fprintf(Our_File, "Size: %.4g (%p)\n", Our_Bot->Size, (void*)&Our_Bot->Size);
+  fprintf(Our_File, "Turn_Rate: %.4g (%p)\n", Our_Bot->Turn_Rate, (void*)&Our_Bot->Turn_Rate);
+  fprintf(Our_File, "Red: %.4g (%p)\n", Our_Bot->Red, (void*)&Our_Bot->Red);
+  fprintf(Our_File, "Green: %.4g (%p)\n", Our_Bot->Green, (void*)&Our_Bot->Green);
+  fprintf(Our_File, "Blue: %.4g (%p)\n", Our_Bot->Blue, (void*)&Our_Bot->Blue);
 
   // Brain
-  fprintf(Our_File, "NN: (%i)\n", &Our_Bot->NN);
-  fprintf(Our_File, " NN.Num_Layers: %i (%i)\n",  Our_Bot->NN.Num_Layers, &Our_Bot->NN.Num_Layers);
-  fprintf(Our_File, " NN.Num_Inputs: %i (%i)\n",  Our_Bot->NN.Num_Inputs, &Our_Bot->NN.Num_Inputs);
-  fprintf(Our_File, " NN.Num_Outputs: %i (%i)\n", Our_Bot->NN.Num_Outputs, &Our_Bot->NN.Num_Outputs);
-  fprintf(Our_File, " NN.Input: %i (%i)\n", Our_Bot->NN.Input, &Our_Bot->NN.Input);
-  fprintf(Our_File, " NN.Output: %i (%i)\n", Our_Bot->NN.Output, &Our_Bot->NN.Output);
-  fprintf(Our_File, " NN.Weights: %i (%i)\n", Our_Bot->NN.Weights, &Our_Bot->NN.Weights);
+  fprintf(Our_File, "NN: (%p)\n", (void*)&Our_Bot->NN);
+  fprintf(Our_File, " NN.Num_Layers: %i (%p)\n",  Our_Bot->NN.Num_Layers, (void*)&Our_Bot->NN.Num_Layers);
+  fprintf(Our_File, " NN.Num_Inputs: %i (%p)\n",  Our_Bot->NN.Num_Inputs, (void*)&Our_Bot->NN.Num_Inputs);
+  fprintf(Our_File, " NN.Num_Outputs: %i (%p)\n", Our_Bot->NN.Num_Outputs, (void*)&Our_Bot->NN.Num_Outputs);
+  fprintf(Our_File, " NN.Input: %p (%p)\n", Our_Bot->NN.Input, (void*)&Our_Bot->NN.Input);
+  fprintf(Our_File, " NN.Output: %p (%p)\n", Our_Bot->NN.Output, (void*)&Our_Bot->NN.Output);
+  fprintf(Our_File, " NN.Weights: %p (%p)\n", Our_Bot->NN.Weights, (void*)&Our_Bot->NN.Weights);
 
   // Eyes
   int e;
-  fprintf(Our_File, "Num_Eyes: %i (%i)\n", Our_Bot->Num_Eyes, &Our_Bot->Num_Eyes);
-  fprintf(Our_File, "Eyes: %i (%i)\n", Our_Bot->Eyes, &Our_Bot->Eyes);
+  fprintf(Our_File, "Num_Eyes: %i (%p)\n", Our_Bot->Num_Eyes, (void*)&Our_Bot->Num_Eyes);
+  fprintf(Our_File, "Eyes: %p (%p)\n", Our_Bot->Eyes, (void*)&Our_Bot->Eyes);
   for(e = 0; e < Our_Bot->Num_Eyes; ++e)
   {
-    fprintf(Our_File, " Eye[%i].Position: %.4g (%i)\n",      e, Our_Bot->Eyes[e].Position,      &Our_Bot->Eyes[e].Position);
-    fprintf(Our_File, " Eye[%i].View_Distance: %.4g (%i)\n", e, Our_Bot->Eyes[e].View_Distance, &Our_Bot->Eyes[e].View_Distance);
-    fprintf(Our_File, " Eye[%i].View_Angle: %.4g (%i)\n",    e, Our_Bot->Eyes[e].View_Angle,    &Our_Bot->Eyes[e].View_Angle);
-    fprintf(Our_File, " Eye[%i].In_Strength: %.4g (%i)\n",   e, Our_Bot->Eyes[e].In_Strength,   &Our_Bot->Eyes[e].In_Strength);
-    fprintf(Our_File, " Eye[%i].In_Red: %.4g (%i)\n",        e, Our_Bot->Eyes[e].In_Red,        &Our_Bot->Eyes[e].In_Red);
-    fprintf(Our_File, " Eye[%i].In_Green: %.4g (%i)\n",      e, Our_Bot->Eyes[e].In_Green,      &Our_Bot->Eyes[e].In_Green);
-    fprintf(Our_File, " Eye[%i].In_Blue: %.4g (%i)\n",       e, Our_Bot->Eyes[e].In_Blue,       &Our_Bot->Eyes[e].In_Blue);
+    fprintf(Our_File, " Eye[%i].Position: %.4g (%p)\n",      e, Our_Bot->Eyes[e].Position,      (void*)&Our_Bot->Eyes[e].Position);
+    fprintf(Our_File, " Eye[%i].View_Distance: %.4g (%p)\n", e, Our_Bot->Eyes[e].View_Distance, (void*)&Our_Bot->Eyes[e].View_Distance);
+    fprintf(Our_File, " Eye[%i].View_Angle: %.4g (%p)\n",    e, Our_Bot->Eyes[e].View_Angle,    (void*)&Our_Bot->Eyes[e].View_Angle);
+    fprintf(Our_File, " Eye[%i].In_Strength: %.4g (%p)\n",   e, Our_Bot->Eyes[e].In_Strength,   (void*)&Our_Bot->Eyes[e].In_Strength);
+    fprintf(Our_File, " Eye[%i].In_Red: %.4g (%p)\n",        e, Our_Bot->Eyes[e].In_Red,        (void*)&Our_Bot->Eyes[e].In_Red);
+    fprintf(Our_File, " Eye[%i].In_Green: %.4g (%p)\n",      e, Our_Bot->Eyes[e].In_Green,      (void*)&Our_Bot->Eyes[e].In_Green);
+    fprintf(Our_File, " Eye[%i].In_Blue: %.4g (%p)\n",       e, Our_Bot->Eyes[e].In_Blue,       (void*)&Our_Bot->Eyes[e].In_Blue);
   }
 
   // Spikes
-  fprintf(Our_File, "Spikes: (%i)\n", &Our_Bot->Spikes);
+  fprintf(Our_File, "Spikes: (%p)\n", (void*)&Our_Bot->Spikes);
 
   fprintf(Our_File, "\n");
   fclose(Our_File);

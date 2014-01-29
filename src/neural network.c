@@ -2,44 +2,44 @@
 
 double **Make_2D_Array(int X_Size, int *Y_Sizes) // Variable column heights, since the number of layers is fixed but nodes/layer is not
 {
-int i;
-double **New_Array = (double **) malloc(X_Size*sizeof(double *));
-for(i = 0; i < X_Size; ++i)
+  int i;
+  double **New_Array = (double **) malloc(X_Size*sizeof(double *));
+  for(i = 0; i < X_Size; ++i)
   {
-  New_Array[i] = (double *) malloc(Y_Sizes[i]*sizeof(double));
+    New_Array[i] = (double *) malloc(Y_Sizes[i]*sizeof(double));
   }
-return New_Array;
+  return New_Array;
 }
 
 double ***Make_3D_Array(int X_Size, int *Y_Sizes) // 3rd dimension is equal to the number of connections backwards
 {
-int i, j;
-double ***New_Array = (double ***) malloc(X_Size*sizeof(double **));
-for(i = 0; i < X_Size; ++i)
+  int i, j;
+  double ***New_Array = (double ***) malloc(X_Size*sizeof(double **));
+  for(i = 0; i < X_Size; ++i)
   {
-  New_Array[i] = (double **) malloc(Y_Sizes[i]*sizeof(double *));
+    New_Array[i] = (double **) malloc(Y_Sizes[i]*sizeof(double *));
   for(j = 0; j < Y_Sizes[i] && i > 0; ++j)
     {
-    New_Array[i][j] = (double *) malloc(Y_Sizes[i-1]*sizeof(double));
+      New_Array[i][j] = (double *) malloc(Y_Sizes[i-1]*sizeof(double));
     }
   }
-return New_Array;
+  return New_Array;
 }
 
 int NN_Mutate(neural_network* Network)
 {
-int i, j, k;
-for(i = 1; i < Network->Num_Layers; ++i)
+  int i, j, k;
+  for(i = 1; i < Network->Num_Layers; ++i)
   {
-  for(j = 0; j < Network->Layer_Sizes[i]; ++j)
+    for(j = 0; j < Network->Layer_Sizes[i]; ++j)
     {
-    for(k = 0; k < Network->Layer_Sizes[i-1]; ++k)
+      for(k = 0; k < Network->Layer_Sizes[i-1]; ++k)
       {
-      Network->Weights[i][j][k] += RAND_BETWEEN(-0.1, 0.1);
+        Network->Weights[i][j][k] += RAND_BETWEEN(-0.1, 0.1);
       }
     }
   }
-return 0;
+  return 0;
 }
 
 void NN_Create(neural_network* NN)
@@ -93,23 +93,23 @@ void NN_Basic(neural_network* Our_NN)
 void NN_Intermediate(neural_network* Our_NN)
 {
   if(Our_NN->Input[0][Our_NN->Eye_Offset] > Our_NN->Input[0][Our_NN->Eye_Offset + 4]) // First eye > Second eye
-    {
+  {
     Our_NN->Output[Our_NN->Num_Layers-1][0] = 0.25;
     Our_NN->Output[Our_NN->Num_Layers-1][1] = 1; // FIXME: 1
     Our_NN->Output[Our_NN->Num_Layers-1][2] = 0;
-    }
+  }
   else if(Our_NN->Input[0][Our_NN->Eye_Offset] < Our_NN->Input[0][Our_NN->Eye_Offset + 4]) // First eye < Second eye
-    {
+  {
     Our_NN->Output[Our_NN->Num_Layers-1][0] = 0.25;
     Our_NN->Output[Our_NN->Num_Layers-1][1] = 0; // FIXME: 0
     Our_NN->Output[Our_NN->Num_Layers-1][2] = 0;
-    }
+  }
   else
-    {
+  {
     Our_NN->Output[Our_NN->Num_Layers-1][0] = 1.0;
     Our_NN->Output[Our_NN->Num_Layers-1][1] = 0.5;
     Our_NN->Output[Our_NN->Num_Layers-1][2] = 0;
-    }
+  }
 }
 
 void NN_Feedforward(neural_network* Our_NN)

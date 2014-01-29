@@ -1,11 +1,10 @@
 #include "defs.h"
 
-
-void Draw_Pellet(world *Our_World, int p)
+void Draw_Pellet(pellet* p)
 {
   glPushMatrix();
-  glColor3f(Our_World->Pellets[p].Red, Our_World->Pellets[p].Green, Our_World->Pellets[p].Blue);
-  glTranslatef(Our_World->Pellets[p].x, Our_World->Pellets[p].y, 0.0);
+  glColor3f(p->Red, p->Green, p->Blue);
+  glTranslatef(p->x, p->y, 0.0);
   glBegin(GL_QUADS);
     glVertex2f(-0.05, -0.05);
     glVertex2f(-0.05,  0.05);
@@ -20,7 +19,7 @@ void Draw_Pellets(world *Our_World)
 	int p;
 	for(p = 0; p < Our_World->Num_Pellets; ++p)
 	{
-	  Draw_Pellet(Our_World, p);
+	  Draw_Pellet(&Our_World->Pellets[p]);
 	}
 }
 
@@ -61,14 +60,6 @@ int Pellet_Add(world* Our_World, float x, float y)
   // World stats
   Our_World->Pellets_Added++;
   Our_World->Num_Pellets++;
-
-  // Boundary checks
-  /*
-  if(x < 0)                       Our_World->Pellets[Our_World->Num_Pellets].x = 0;
-  else if(x > Our_World->Width)   Our_World->Pellets[Our_World->Num_Pellets].x = Our_World->Width;
-  if(y < 0)                       Our_World->Pellets[Our_World->Num_Pellets].y = 0;
-  else if(y > Our_World->Height)  Our_World->Pellets[Our_World->Num_Pellets].y = Our_World->Height;
-  */
 
   //printf("Add_Pellet() %.4g %.4g\n", Our_World->Pellets[Our_World->Num_Pellets].x, Our_World->Pellets[Our_World->Num_Pellets].y);
 

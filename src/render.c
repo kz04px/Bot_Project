@@ -201,7 +201,6 @@ void Render_Main(void* a)
       SetWindowText(Main.hStatistics, String);
     }
     count++;
-
     Sleep(20);
   }
 	DisableOpenGL(Main.hWnd, Main.hDC, Main.hRC);
