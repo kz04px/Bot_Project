@@ -1,0 +1,1 @@
+gcc -o main.exe main.c main.h defs.h bots.c neural_network.c pellets.c render.c selection.c simulation.c world.c -mwindows -lopengl32
