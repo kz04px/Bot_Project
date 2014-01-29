@@ -1,5 +1,4 @@
-Bot_Project
-===========
+Bot Project v4
 
 About:
   A generational evolution simulation controlled by feedforward neural networks.
