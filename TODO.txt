@@ -6,7 +6,6 @@ GUI:
    - Window with world setup
    - check boxes, sliders, etc
    - Load scenario
-	- Give the bots weird shit to start 
     -
    -	
   - Save
