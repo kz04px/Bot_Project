@@ -24,7 +24,6 @@
 
 #define BOT_START_ENERGY  500
 #define BOT_NUTRITION     200
-
 #define PELLET_NUTRITION  200
 
 typedef struct

@@ -1,0 +1,48 @@
+GUI:
+ - Button to view brain
+ - Good logging of what happened
+ - Menu
+  - New
+   - Window with world setup
+   - check boxes, sliders, etc
+   - Load scenario
+	- Give the bots weird shit to start 
+    -
+   -	
+  - Save
+  - Load save
+  - About
+  - Help
+  - Exit
+  - 
+ - 'Keep' button (?)
+ - Screen shot button
+ - Radio boxes to toggle eye overlay
+ - Toggle fancy graphics on/off depending on simulation speed
+ - Way to drag bots around (Drag tool?)
+ - 
+
+Simulation:
+ - 2D array containing distances between bots and bots/pellets?
+ - Back-propagate when something good happens?
+ - 
+ 
+Logging:
+ - Per generation
+  - Generation number
+  - Pellets eaten (Min, Avg, Max)
+  - Lifetimes (Min, Avg, Max)
+  - Number of Frames
+  - 
+ - Total generations
+ - Number of bots
+ - Number of pellets
+ - Random seed
+ - 
+ 
+Brain View:
+ - Show connection weights
+  - Maybe black <--> white squares in a grid for the weights?
+  -
+ - Do it in the viewer
+ - 

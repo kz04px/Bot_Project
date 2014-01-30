@@ -1,125 +1,14 @@
 #include "main.h"
+#include "gui.h"
 #include "defs.h"
 
 world *Our_World = NULL;
 
 int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow)
 {
-	WNDCLASSEX wincl;
 
-	/* The Window structure */
-	wincl.hInstance = hThisInstance;
-	wincl.lpszClassName = szClassName;
-	wincl.lpfnWndProc = WindowProcedure;
-	wincl.style = CS_DBLCLKS;
-	wincl.cbSize = sizeof(WNDCLASSEX);
-
-	/* Use default icon and mouse-pointer */
-	wincl.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wincl.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	wincl.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wincl.lpszMenuName = NULL;
-	wincl.cbClsExtra = 0;
-	wincl.cbWndExtra = 0;
-	wincl.hbrBackground = (HBRUSH)COLOR_BACKGROUND;
-
-	/* Register the window class, and if it fails quit the program */
-	if(!RegisterClassEx(&wincl))
-		return 0;
-
-	/* The class is registered, let's create the program*/
-	hMain = CreateWindowEx(
-		   0,                                     // Extended possibilites for variation
-		   szClassName,                           // Classname
-		   WINDOW_TITLE,                          // Title Text
-		   WS_OVERLAPPEDWINDOW,                   // default window
-		   CW_USEDEFAULT,                         // Windows decides the position
-		   CW_USEDEFAULT,                         // where the window ends up on the screen
-		   Window_Width+18,                       // The program's width
-		   Window_Height+36,                      // and height in pixels
-		   HWND_DESKTOP,                          // The window is a child-window to desktop
-		   NULL,                                  // No menu
-		   hThisInstance,                         // Program Instance handler
-		   NULL                                   // No Window Creation data
-		   );
-
-	Main.hWnd = CreateWindowEx(
-		   0,                                     // Extended possibilites for variation
-		   szClassName,                           // Classname
-		   "Code::Blocks Template Windows App",   // Title Text
-		   WS_CHILD | WS_VISIBLE,                 // default window
-		   200,                                   // Windows decides the position
-		   0,                                     // where the window ends up on the screen
-		   Window_Width-200,                      // The program's width
-		   Window_Height,                         // and height in pixels
-		   hMain,                                 //
-		   NULL,                                  // No menu
-		   hThisInstance,                         // Program Instance handler
-		   NULL                                   // No Window Creation data
-		   );
-
-	hViewer = CreateWindowEx(
-		   0,                                     // Extended possibilites for variation
-		   szClassName,                           // Classname
-		   "Viewer",                              // Title Text
-		   (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU),
-		   //WS_OVERLAPPEDWINDOW^WS_THICKFRAME,     // default window
-		   CW_USEDEFAULT,                         // Windows decides the position
-		   CW_USEDEFAULT,                         // where the window ends up on the screen
-		   300+5,                                   // The program's width
-		   430+25,                                   // and height in pixels
-		   hMain,                                 //
-		   NULL,                                  // No menu
-		   hThisInstance,                         // Program Instance handler
-		   NULL                                   // No Window Creation data
-		   );
-
-	Viewer.hWnd = CreateWindowEx(
-		   0,                                     // Extended possibilites for variation
-		   szClassName,                           // Classname
-		   "Viewer",                              // Title Text
-		   WS_CHILD | WS_VISIBLE,     // default window
-		   0,                         // Windows decides the position
-		   30,                         // where the window ends up on the screen
-		   300,                                   // The program's width
-		   300,                                   // and height in pixels
-		   hViewer,                                 //
-		   NULL,                                  // No menu
-		   hThisInstance,                         // Program Instance handler
-		   NULL                                   // No Window Creation data
-		   );
-
-  // Start/Pause button
-  hPauseButton = CreateWindow("button", BUTTON_1_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                0, 0, 200, 80, hMain, (HMENU)BUTTON_1_ID, hThisInstance, NULL);
-  // Show/Hide Viewer button
-  hViewerButton = CreateWindow("button", BUTTON_2_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                0, 80, 200, 80, hMain, (HMENU)BUTTON_2_ID, hThisInstance, NULL);
-  // Delete button
-  hDeleteButton = CreateWindow("button", BUTTON_3_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                0, 330, 150, 50, hViewer, (HMENU)BUTTON_3_ID, hThisInstance, NULL);
-  // Scramble button
-  hScrambleButton = CreateWindow("button", BUTTON_4_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                150, 330, 150, 50, hViewer, (HMENU)BUTTON_4_ID, hThisInstance, NULL);
-  // Find button
-  hFindButton = CreateWindow("button", BUTTON_5_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                0, 380, 150, 50, hViewer, (HMENU)BUTTON_5_ID, hThisInstance, NULL);
-  // Previous button
-  hPreviousButton = CreateWindow("button", BUTTON_6_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                0, 0, 150, 30, hViewer, (HMENU)BUTTON_6_ID, hThisInstance, NULL);
-  // Next button
-  hNextButton = CreateWindow("button", BUTTON_7_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                150, 0, 150, 30, hViewer, (HMENU)BUTTON_7_ID, hThisInstance, NULL);
-  // 'Statistics' button
-  hStatisticsButton = CreateWindow("button", BUTTON_8_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-                150, 380, 150, 50, hViewer, (HMENU)BUTTON_8_ID, hThisInstance, NULL);
-
-  // Main statistics box
-	Main.hStatistics = CreateWindow("Edit", "None", WS_CHILD | WS_VISIBLE | ES_MULTILINE,
-                0, 160, 200, 320, hMain, NULL, hThisInstance, NULL );
-  // Viewer statistics box
-	Viewer.hStatistics = CreateWindow("Edit", "None", WS_CHILD | WS_VISIBLE | ES_MULTILINE,
-                300, 0, 300, 430, hViewer, NULL, hThisInstance, NULL );
+  // GUI Stuff
+	GUI_Create(hThisInstance, &Main.hWnd, &Viewer.hWnd, &Main.hStatistics, &Viewer.hStatistics);
 
 	// Show the main window
 	ShowWindow(hMain, nCmdShow);
@@ -148,9 +37,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 
  	// Create scenario
  	int i;
- 	for(i = 0; i < 20; ++i) // 20
+ 	for(i = 0; i < 20; ++i)
     Bot_Add(Our_World, -1, -1);
- 	for(i = 0; i < 150; ++i) // 150
+ 	for(i = 0; i < 150; ++i)
     Pellet_Add(Our_World, -1, -1);
 
  	// Threads
@@ -169,9 +58,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 	// Close stuff
 	Main.Quit = TRUE;
 	Viewer.Quit = TRUE;
-  Simulation_End(Our_World);
-	//Simulation.Quit = TRUE;
+	Simulation.Quit = TRUE;
   WaitForMultipleObjects(Num_Threads, hThreads, TRUE, INFINITE);
+  Simulation_End(Our_World);
 	return 0;
 }
 
