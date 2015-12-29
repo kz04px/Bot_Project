@@ -1,46 +1,46 @@
 #include "defs.h"
 
-int World_Init(world* Our_World)
+int world_init(world* our_world)
 {
   // Normal
-  Our_World->Width = 96;
-  Our_World->Height = 54;
-  Our_World->Frame = 0;
-  Our_World->Generation = 0;
-  Our_World->Time_Seed = time(0);
-  Our_World->Selected = -1;
-  srand(Our_World->Time_Seed);
-  // Stats
-	Our_World->Bots_Added = 0;
-	Our_World->Bots_Removed = 0;
-	Our_World->Bots_Most = 0;
-	Our_World->Pellets_Added = 0;
-	Our_World->Pellets_Removed = 0;
-	Our_World->Pellets_Most = 0;
-  // Grid
-  Our_World->Grid_Width = Our_World->Width/10;
-  Our_World->Grid_Height = Our_World->Height/10;
-  //Grid = (grid*) malloc(Grid_Width*Grid_Height*sizeof(grid));
-  // Bots
-  Our_World->Num_Bots = 0;
-  Our_World->Max_Bots = 128;
-  Our_World->Num_Bots_Alive = 0;
-  Our_World->Num_Parents = 4;
-  Our_World->Bots = (bot*) malloc(Our_World->Max_Bots*sizeof(bot));
-  Our_World->Bot_Parents = (bot*) malloc(Our_World->Num_Parents*sizeof(bot));
-  Our_World->Bot_Ranks = (int*) malloc(Our_World->Max_Bots*sizeof(int));
-  // Pellets
-  Our_World->Num_Pellets = 0;
-  Our_World->Max_Pellets = 512;
-  Our_World->Pellets = (pellet*) malloc(Our_World->Max_Pellets*sizeof(pellet));
+  our_world->width = 96;
+  our_world->height = 54;
+  our_world->frame = 0;
+  our_world->generation = 0;
+  our_world->seed = time(0);
+  our_world->selected = -1;
+  srand(our_world->seed);
+  // stats
+  our_world->bots_added = 0;
+  our_world->bots_removed = 0;
+  our_world->bots_most = 0;
+  our_world->pellets_added = 0;
+  our_world->pellets_removed = 0;
+  our_world->pellets_most = 0;
+  // grid
+  our_world->grid_width = our_world->width/10;
+  our_world->grid_height = our_world->height/10;
+  //grid = (grid*) malloc(grid_width*grid_height*sizeof(grid));
+  // bots
+  our_world->num_bots = 0;
+  our_world->max_bots = 128;
+  our_world->num_bots_alive = 0;
+  our_world->num_parents = 4;
+  our_world->bots = (bot*) malloc(our_world->max_bots*sizeof(bot));
+  our_world->bot_parents = (bot*) malloc(our_world->num_parents*sizeof(bot));
+  our_world->bot_ranks = (int*) malloc(our_world->max_bots*sizeof(int));
+  // pellets
+  our_world->num_pellets = 0;
+  our_world->max_pellets = 512;
+  our_world->pellets = (pellet*) malloc(our_world->max_pellets*sizeof(pellet));
 
   int p;
-  for(p = 0; p < Our_World->Num_Parents; ++p)
+  for(p = 0; p < our_world->num_parents; ++p)
   {
-    Bot_Create(&Our_World->Bot_Parents[p], RAND_BETWEEN(0, Our_World->Width), RAND_BETWEEN(0, Our_World->Height));
+    bot_create(&our_world->bot_parents[p], RAND_BETWEEN(0, our_world->width), RAND_BETWEEN(0, our_world->height));
   }
 
   rand();
 
-  return TRUE;
+  return 1;
 }

@@ -2,52 +2,52 @@
 
 #define EYE_ACCURACY 15
 
-void Draw_Bot(bot *Our_Bot)
+void draw_bot(bot *our_bot)
 {
   int e; // Current eye
   int s; // Current spike
 
-  // Draw vision triangles
+  // draw vision triangles
   float Accuracy_Angle;
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  for(e = 0; e < Our_Bot->Num_Eyes; ++e)
+  for(e = 0; e < our_bot->num_eyes; ++e)
   {
-    Accuracy_Angle = (float)Our_Bot->Eyes[e].View_Angle*2/EYE_ACCURACY;
+    Accuracy_Angle = (float)our_bot->eyes[e].view_angle*2/EYE_ACCURACY;
     glPushMatrix();
-    glColor3f(Our_Bot->Eyes[e].In_Red, Our_Bot->Eyes[e].In_Green, Our_Bot->Eyes[e].In_Blue);
+    glColor3f(our_bot->eyes[e].in_red, our_bot->eyes[e].in_green, our_bot->eyes[e].in_blue);
 
-    glRotatef(Our_Bot->r+Our_Bot->Eyes[e].Position-Our_Bot->Eyes[e].View_Angle, 0.0, 0.0, -1.0);
+    glRotatef(our_bot->r+our_bot->eyes[e].position-our_bot->eyes[e].view_angle, 0.0, 0.0, -1.0);
     glBegin(GL_POLYGON);
     glVertex2f(0, 0);
     int i;
     for(i = 0; i <= EYE_ACCURACY; ++i)
-      {
-      glVertex2f((float)Our_Bot->Eyes[e].View_Distance*sin(DEG_TO_RAD(Accuracy_Angle*i)),
-                 (float)Our_Bot->Eyes[e].View_Distance*cos(DEG_TO_RAD(Accuracy_Angle*i)));
-      }
+    {
+      glVertex2f((float)our_bot->eyes[e].view_distance*sin(DEG_TO_RAD(Accuracy_Angle*i)),
+                 (float)our_bot->eyes[e].view_distance*cos(DEG_TO_RAD(Accuracy_Angle*i)));
+    }
     glEnd();
     glPopMatrix();
   }
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-  // Draw spikes
-  for(s = 0; s < Our_Bot->Num_Spikes; ++s)
+  // draw spikes
+  for(s = 0; s < our_bot->num_spikes; ++s)
   {
     glPushMatrix();
     glColor3f(0.5, 0.5, 0.5);
-    glRotatef(Our_Bot->r, 0.0, 0.0, -1.0);
+    glRotatef(our_bot->r, 0.0, 0.0, -1.0);
     glBegin(GL_TRIANGLES);
-      glVertex2f( 0.00, 0.20 + Our_Bot->Spikes[s].Length);
+      glVertex2f( 0.00, 0.20 + our_bot->spikes[s].length);
       glVertex2f( 0.05, 0.15);
       glVertex2f(-0.05, 0.15);
     glEnd();
     glPopMatrix();
   }
 
-  // Draw body
+  // draw body
   glPushMatrix();
-  glColor3f(Our_Bot->Red, Our_Bot->Green, Our_Bot->Blue); // Red
-  glRotatef(Our_Bot->r, 0,0,-1);
+  glColor3f(our_bot->red, our_bot->green, our_bot->blue); // red
+  glRotatef(our_bot->r, 0,0,-1);
   glBegin(GL_POLYGON);
     glVertex2f( 0.00,  0.20);
     glVertex2f( 0.19,  0.06);
@@ -57,14 +57,14 @@ void Draw_Bot(bot *Our_Bot)
   glEnd();
   glPopMatrix();
 
-  // Draw eyes
-  for(e = 0; e < Our_Bot->Num_Eyes; ++e)
+  // draw eyes
+  for(e = 0; e < our_bot->num_eyes; ++e)
   {
     glPushMatrix();
-    glColor3f(Our_Bot->Eyes[e].In_Red, Our_Bot->Eyes[e].In_Green, Our_Bot->Eyes[e].In_Blue);
-    glRotatef(Our_Bot->r, 0.0, 0.0, -1.0);
-    float yPos = 0.25 * cos(DEG_TO_RAD(Our_Bot->Eyes[e].Position)) - 0.05;
-    float xPos = 0.25 * sin(DEG_TO_RAD(Our_Bot->Eyes[e].Position)) - 0.05;
+    glColor3f(our_bot->eyes[e].in_red, our_bot->eyes[e].in_green, our_bot->eyes[e].in_blue);
+    glRotatef(our_bot->r, 0.0, 0.0, -1.0);
+    float yPos = 0.25 * cos(DEG_TO_RAD(our_bot->eyes[e].position)) - 0.05;
+    float xPos = 0.25 * sin(DEG_TO_RAD(our_bot->eyes[e].position)) - 0.05;
     glBegin(GL_QUADS);
       glVertex2f(xPos    , yPos    );
       glVertex2f(xPos    , yPos+0.1);
@@ -75,431 +75,431 @@ void Draw_Bot(bot *Our_Bot)
   }
 }
 
-void Draw_Edge_Bots(world *Our_World)
+void draw_edge_bots(world *our_world)
 {
-	int b;
-	for(b = 0; b < Our_World->Num_Bots; ++b)
-	{
-	  // -w
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x-Our_World->Width, Our_World->Bots[b].y, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+  int b;
+  for(b = 0; b < our_world->num_bots; ++b)
+  {
+    // -w
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x-our_world->width, our_world->bots[b].y, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
     // +w
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x+Our_World->Width, Our_World->Bots[b].y, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x+our_world->width, our_world->bots[b].y, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
     // -h
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x, Our_World->Bots[b].y-Our_World->Height, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x, our_world->bots[b].y-our_world->height, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
     // +h
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x, Our_World->Bots[b].y+Our_World->Height, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x, our_world->bots[b].y+our_world->height, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
-	  // -w -h
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x-Our_World->Width, Our_World->Bots[b].y-Our_World->Height, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+    // -w -h
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x-our_world->width, our_world->bots[b].y-our_world->height, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
-	  // -w +h
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x-Our_World->Width, Our_World->Bots[b].y+Our_World->Height, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+    // -w +h
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x-our_world->width, our_world->bots[b].y+our_world->height, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
-	  // +w -h
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x+Our_World->Width, Our_World->Bots[b].y-Our_World->Height, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+    // +w -h
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x+our_world->width, our_world->bots[b].y-our_world->height, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
-	  // +w +h
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x+Our_World->Width, Our_World->Bots[b].y+Our_World->Height, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+    // +w +h
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x+our_world->width, our_world->bots[b].y+our_world->height, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
-	}
+  }
 }
 
-void Draw_Bots(world *Our_World)
+void draw_bots(world *our_world)
 {
-	int b;
-	for(b = 0; b < Our_World->Num_Bots; ++b)
-	{
-	  glPushMatrix();
-    glTranslatef(Our_World->Bots[b].x, Our_World->Bots[b].y, 0.0);
-	  Draw_Bot(&Our_World->Bots[b]);
+  int b;
+  for(b = 0; b < our_world->num_bots; ++b)
+  {
+    glPushMatrix();
+    glTranslatef(our_world->bots[b].x, our_world->bots[b].y, 0.0);
+    draw_bot(&our_world->bots[b]);
     glPopMatrix();
-	}
+  }
 }
 
-int Bot_Find_Closest(world* Our_World, float x, float y)
+int bot_find_closest(world* our_world, float x, float y)
 {
-  int Closest_Bot = -1;
-  float Max_Range = 0.5;
-  float Closest_Range = 999999;
+  int closest_bot = -1;
+  float max_Range = 0.5;
+  float closest_Range = 999999;
 
   int b;
-  for(b = 0; b < Our_World->Num_Bots; ++b)
+  for(b = 0; b < our_world->num_bots; ++b)
   {
-    if(DIST(Our_World->Bots[b].x, Our_World->Bots[b].y, x, y) < Closest_Range)
+    if(DIST(our_world->bots[b].x, our_world->bots[b].y, x, y) < closest_Range)
     {
-      Closest_Range = DIST(Our_World->Bots[b].x, Our_World->Bots[b].y, x, y);
-      Closest_Bot = b;
+      closest_Range = DIST(our_world->bots[b].x, our_world->bots[b].y, x, y);
+      closest_bot = b;
     }
   }
 
-  if(Closest_Range < Max_Range)
+  if(closest_Range < max_Range)
   {
-    printf("Bot selected - Bot: %i, Range: %.4g\n", Closest_Bot, Closest_Range);
-    return Closest_Bot;
+    printf("bot selected - bot: %i, Range: %.4g\n", closest_bot, closest_Range);
+    return closest_bot;
   }
   else
   {
-    printf("No bot selected - Closest: %i, %.4g\n", Closest_Bot, Closest_Range);
+    printf("No bot selected - closest: %i, %.4g\n", closest_bot, closest_Range);
     return -1;
   }
 }
 
-int Bot_Copy(bot* Dest, bot* Source)
+int bot_copy(bot* dest, bot* source)
 {
-  if(Dest == NULL || Source == NULL)
-    return FALSE;
+  if(dest == NULL || source == NULL)
+    return 0;
 
   // Manual copy
-  Dest->Energy = Source->Energy;
-  Dest->Age = Source->Age;
-  Dest->Dead = Source->Dead;
-  Dest->x = Source->x;
-  Dest->y = Source->y;
-  Dest->r = Source->r;
-  Dest->Size = Source->Size;
-  Dest->Turn_Rate = Source->Turn_Rate;
-  Dest->Red = Source->Red;
-  Dest->Green = Source->Green;
-  Dest->Blue = Source->Blue;
-  Dest->Num_Eyes = Source->Num_Eyes;
-  Dest->Num_Spikes = Source->Num_Spikes;
+  dest->energy = source->energy;
+  dest->age = source->age;
+  dest->dead = source->dead;
+  dest->x = source->x;
+  dest->y = source->y;
+  dest->r = source->r;
+  dest->size = source->size;
+  dest->turn_rate = source->turn_rate;
+  dest->red = source->red;
+  dest->green = source->green;
+  dest->blue = source->blue;
+  dest->num_eyes = source->num_eyes;
+  dest->num_spikes = source->num_spikes;
 
-  // Pointer stuff (Eyes)
+  // Pointer stuff (eyes)
   int e;
-  for(e = 0; e < Source->Num_Eyes; ++e)
+  for(e = 0; e < source->num_eyes; ++e)
   {
-    Dest->Eyes[e].Position      = Source->Eyes[e].Position;
-    Dest->Eyes[e].View_Distance = Source->Eyes[e].View_Distance;
-    Dest->Eyes[e].View_Angle    = Source->Eyes[e].View_Angle;
-    Dest->Eyes[e].Red           = Source->Eyes[e].Red;
-    Dest->Eyes[e].Green         = Source->Eyes[e].Green;
-    Dest->Eyes[e].Blue          = Source->Eyes[e].Blue;
-    Dest->Eyes[e].In_Strength   = Source->Eyes[e].In_Strength;
-    Dest->Eyes[e].In_Red        = Source->Eyes[e].In_Red;
-    Dest->Eyes[e].In_Green      = Source->Eyes[e].In_Green;
-    Dest->Eyes[e].In_Blue       = Source->Eyes[e].In_Blue;
+    dest->eyes[e].position      = source->eyes[e].position;
+    dest->eyes[e].view_distance = source->eyes[e].view_distance;
+    dest->eyes[e].view_angle    = source->eyes[e].view_angle;
+    dest->eyes[e].red           = source->eyes[e].red;
+    dest->eyes[e].green         = source->eyes[e].green;
+    dest->eyes[e].blue          = source->eyes[e].blue;
+    dest->eyes[e].in_strength   = source->eyes[e].in_strength;
+    dest->eyes[e].in_red        = source->eyes[e].in_red;
+    dest->eyes[e].in_green      = source->eyes[e].in_green;
+    dest->eyes[e].in_blue       = source->eyes[e].in_blue;
   }
 
-  // Pointer stuff (Spikes)
+  // Pointer stuff (spikes)
   int s;
-  for(s = 0; s < Dest->Num_Spikes; ++s)
+  for(s = 0; s < dest->num_spikes; ++s)
   {
-    Dest->Spikes[s].Retracted = Source->Spikes[s].Retracted;
-    Dest->Spikes[s].Position  = Source->Spikes[s].Position;
-    Dest->Spikes[s].Length    = Source->Spikes[s].Length;
+    dest->spikes[s].retracted = source->spikes[s].retracted;
+    dest->spikes[s].position  = source->spikes[s].position;
+    dest->spikes[s].length    = source->spikes[s].length;
   }
 
   // Pointer stuff (Neural network)
-  Dest->NN.Num_Layers = Source->NN.Num_Layers;
-  Dest->NN.Num_Inputs = Source->NN.Num_Inputs;
-  Dest->NN.Num_Outputs = Source->NN.Num_Outputs;
-  Dest->NN.Layer_Sizes = Source->NN.Layer_Sizes;
+  dest->nn.num_layers = source->nn.num_layers;
+  dest->nn.num_inputs = source->nn.num_inputs;
+  dest->nn.num_outputs = source->nn.num_outputs;
+  dest->nn.layer_sizes = source->nn.layer_sizes;
   int i, j, k;
-  for(i = 1; i < Dest->NN.Num_Layers; ++i)
+  for(i = 1; i < dest->nn.num_layers; ++i)
   {
-    for(j = 0; j < Dest->NN.Layer_Sizes[i]; ++j)
+    for(j = 0; j < dest->nn.layer_sizes[i]; ++j)
     {
-      for(k = 0; k < Dest->NN.Layer_Sizes[i-1]; ++k)
+      for(k = 0; k < dest->nn.layer_sizes[i-1]; ++k)
       {
-        Dest->NN.Weights[i][j][k] = Source->NN.Weights[i][j][k];
+        dest->nn.weights[i][j][k] = source->nn.weights[i][j][k];
       }
     }
   }
 
-  return TRUE;
+  return 0;
 }
 
-int Bot_Refresh(bot* Our_Bot)
+int bot_Refresh(bot* our_bot)
 {
-  Our_Bot->Energy = BOT_START_ENERGY;
-  Our_Bot->Age = 0;
-  Our_Bot->Dead = FALSE;
-  return TRUE;
+  our_bot->energy = BOT_START_ENERGY;
+  our_bot->age = 0;
+  our_bot->dead = 0;
+  return 0;
 }
 
-int Bot_Breed(bot* Child, bot* Parent1, bot* Parent2)
+int bot_breed(bot* Child, bot* parent1, bot* parent2)
 {
-  if(Child == NULL || Parent1 == NULL || Parent2 == NULL)
-    return FALSE;
+  if(Child == NULL || parent1 == NULL || parent2 == NULL)
+    return 0;
 
   // Basic version
   if(rand()%2 == 0)
-    Bot_Copy(Child, Parent1);
+    bot_copy(Child, parent1);
   else
-    Bot_Copy(Child, Parent2);
+    bot_copy(Child, parent2);
 
   // Crossover version
   /*
-  Bot_Copy(Child, Parent1);
+  bot_copy(Child, parent1);
   if(rand()%2 == 0)
-    Child->Size = Parent2->Size;
+    Child->size = parent2->size;
   if(rand()%2 == 0)
-    Child->Turn_Rate = Parent2->Turn_Rate;
+    Child->turn_rate = parent2->turn_rate;
   */
 
-  return TRUE;
+  return 0;
 }
 
-int Bot_Mutate(bot* Our_Bot)
+int bot_mutate(bot* our_bot)
 {
-  Our_Bot->Red += RAND_BETWEEN(-0.1, 0.1);
-  Our_Bot->Green += RAND_BETWEEN(-0.1, 0.1);
-  Our_Bot->Blue += RAND_BETWEEN(-0.1, 0.1);
-  Our_Bot->Turn_Rate += RAND_BETWEEN(-0.1, 0.1);
+  our_bot->red += RAND_BETWEEN(-0.1, 0.1);
+  our_bot->green += RAND_BETWEEN(-0.1, 0.1);
+  our_bot->blue += RAND_BETWEEN(-0.1, 0.1);
+  our_bot->turn_rate += RAND_BETWEEN(-0.1, 0.1);
 
   // Neural network
-  NN_Mutate(&Our_Bot->NN);
+  nn_mutate(&our_bot->nn);
 
-  // Eyes
+  // eyes
   int e;
-  for(e = 0; e < Our_Bot->Num_Eyes; ++e)
+  for(e = 0; e < our_bot->num_eyes; ++e)
   {
-    //Our_Bot->Eyes[e].Position += RAND_BETWEEN(-1.0, 1.0);
-    //Our_Bot->Eyes[e].View_Angle += RAND_BETWEEN(-1.0, 1.0);
-    //Our_Bot->Eyes[e].View_Distance += RAND_BETWEEN(-0.1, 0.1);
+    //our_bot->eyes[e].position += RAND_BETWEEN(-1.0, 1.0);
+    //our_bot->eyes[e].view_angle += RAND_BETWEEN(-1.0, 1.0);
+    //our_bot->eyes[e].view_distance += RAND_BETWEEN(-0.1, 0.1);
   }
 
-  // Spikes
+  // spikes
   int s;
-  for(s = 0; e < Our_Bot->Num_Eyes; ++s)
+  for(s = 0; e < our_bot->num_eyes; ++s)
   {
-    //Our_Bot->Spikes[s].Position += RAND_BETWEEN(-0.1, 0.1);
-    //Our_Bot->Spikes[s].Length += RAND_BETWEEN(-0.1, 0.1);
+    //our_bot->spikes[s].position += RAND_BETWEEN(-0.1, 0.1);
+    //our_bot->spikes[s].length += RAND_BETWEEN(-0.1, 0.1);
   }
 
-  return TRUE;
+  return 0;
 }
 
-void Bots_Breed_New_Generation(world* Our_World)
+void bots_breed_new_generation(world* our_world)
 {
-  // Create parent bots
+  // create parent bots
   int p;
-  for(p = 0; p < Our_World->Num_Parents; ++p)
+  for(p = 0; p < our_world->num_parents; ++p)
   {
-    Bot_Copy(&Our_World->Bot_Parents[p], &Our_World->Bots[Our_World->Bot_Ranks[p]]);
+    bot_copy(&our_world->bot_parents[p], &our_world->bots[our_world->bot_ranks[p]]);
   }
 
-  // Breed new generation from parents
+  // breed new generation from parents
   int b;
-  for(b = 0; b < Our_World->Num_Bots; ++b)
+  for(b = 0; b < our_world->num_bots; ++b)
   {
-    Bot_Breed(&Our_World->Bots[b],
-              &Our_World->Bot_Parents[rand()%Our_World->Num_Parents],
-              &Our_World->Bot_Parents[rand()%Our_World->Num_Parents]);
+    bot_breed(&our_world->bots[b],
+              &our_world->bot_parents[rand()%our_world->num_parents],
+              &our_world->bot_parents[rand()%our_world->num_parents]);
 
     // Refresh bot
-    Our_World->Bots[b].x = RAND_BETWEEN(0, Our_World->Width);
-    Our_World->Bots[b].y = RAND_BETWEEN(0, Our_World->Height);
-    Our_World->Bots[b].Energy = BOT_START_ENERGY;
-    Our_World->Bots[b].Age = 0;
-    Our_World->Bots[b].Dead = FALSE;
+    our_world->bots[b].x = RAND_BETWEEN(0, our_world->width);
+    our_world->bots[b].y = RAND_BETWEEN(0, our_world->height);
+    our_world->bots[b].energy = BOT_START_ENERGY;
+    our_world->bots[b].age = 0;
+    our_world->bots[b].dead = 0;
 
-    // Mutate bot
-    Bot_Mutate(&Our_World->Bots[b]);
+    // mutate bot
+    bot_mutate(&our_world->bots[b]);
   }
 }
 
-void Bot_Ranks(world* Our_World)
+void bot_ranks(world* our_world)
 {
   #ifndef BOT_SCORE
-  #define BOT_SCORE (Our_World->Bots[b].Age + Our_World->Bots[b].Energy)
+  #define BOT_SCORE (our_world->bots[b].age + our_world->bots[b].energy)
   #endif
 
   int n;
-  //for(n = Our_World->Num_Bots-1; n >= 0; --n)
-  for(n = 0; n < Our_World->Num_Bots; ++n)
+  //for(n = our_world->num_bots-1; n >= 0; --n)
+  for(n = 0; n < our_world->num_bots; ++n)
   {
-    int Best_Bot_Score = -1;
-    int Best_Bot = -1;
+    int Best_bot_Score = -1;
+    int Best_bot = -1;
 
     int b;
-    for(b = 0; b < Our_World->Num_Bots; ++b)
+    for(b = 0; b < our_world->num_bots; ++b)
     {
-      if(BOT_SCORE > Best_Bot_Score)
+      if(BOT_SCORE > Best_bot_Score)
       {
-        Best_Bot_Score = BOT_SCORE;
-        Best_Bot = b;
+        Best_bot_Score = BOT_SCORE;
+        Best_bot = b;
       }
     }
 
-    Our_World->Bot_Ranks[n] = Best_Bot;
-    Our_World->Bots[Best_Bot].Age = -1;
-    Our_World->Bots[Best_Bot].Energy = -1;
+    our_world->bot_ranks[n] = Best_bot;
+    our_world->bots[Best_bot].age = -1;
+    our_world->bots[Best_bot].energy = -1;
   }
 
   #undef BOT_SCORE
 }
 
-int Bot_Kill(world* Our_World, int b)
+int bot_kill(world* our_world, int b)
 {
-  if(b >= Our_World->Num_Bots || b < 0 || Our_World->Bots[b].Dead == TRUE)
-    return FALSE;
+  if(b >= our_world->num_bots || b < 0 || our_world->bots[b].dead)
+    return 0;
 
-  Our_World->Bots[b].Dead = TRUE;
-  Our_World->Num_Bots_Alive--;
-  return TRUE;
+  our_world->bots[b].dead = 0;
+  our_world->num_bots_alive--;
+  return 0;
 }
 
-int Bot_Scramble(world* Our_World, int b)
+int bot_scramble(world* our_world, int b)
 {
-  if(b >= Our_World->Num_Bots || b < 0)
-    return FALSE;
+  if(b >= our_world->num_bots || b < 0)
+    return 0;
 
-  Our_World->Bots[b].Red = RAND_BETWEEN(0.0, 1.0);
-  Our_World->Bots[b].Green = RAND_BETWEEN(0.0, 1.0);
-  Our_World->Bots[b].Blue = RAND_BETWEEN(0.0, 1.0);
-  Our_World->Bots[b].r = RAND_BETWEEN(0.0, 360.0);
-  return TRUE;
+  our_world->bots[b].red = RAND_BETWEEN(0.0, 1.0);
+  our_world->bots[b].green = RAND_BETWEEN(0.0, 1.0);
+  our_world->bots[b].blue = RAND_BETWEEN(0.0, 1.0);
+  our_world->bots[b].r = RAND_BETWEEN(0.0, 360.0);
+  return 0;
 }
 
-int Bot_Remove(world* Our_World, int n)
+int bot_remove(world* our_world, int n)
 {
-  if(n >= Our_World->Num_Bots || n < 0)
-    return FALSE;
+  if(n >= our_world->num_bots || n < 0)
+    return 0;
 
-  Bot_Copy(&Our_World->Bots[n], &Our_World->Bots[Our_World->Num_Bots-1]);
-  //Our_World->Bots[n] = Our_World->Bots[Our_World->Num_Bots-1];
-  // World stats
-  Our_World->Bots_Removed++;
-  Our_World->Num_Bots--;
-  return TRUE;
+  bot_copy(&our_world->bots[n], &our_world->bots[our_world->num_bots-1]);
+  //our_world->bots[n] = our_world->bots[our_world->num_bots-1];
+  // world stats
+  our_world->bots_removed++;
+  our_world->num_bots--;
+  return 0;
 }
 
-int Bot_Dump(bot* Our_Bot)
+int bot_dump(bot* our_bot)
 {
-  FILE* Our_File = fopen("Bot_Dump.txt", "a");
-  if(Our_Bot == NULL || Our_File == NULL)
-    return FALSE;
+  FILE* our_File = fopen("bot_dump.txt", "a");
+  if(our_bot == NULL || our_File == NULL)
+    return 0;
 
   // General
-  fprintf(Our_File, "Energy: %i (%p)\n", Our_Bot->Energy, (void*)&Our_Bot->Energy);
-  fprintf(Our_File, "Age: %i (%p)\n", Our_Bot->Age, (void*)&Our_Bot->Age);
-  fprintf(Our_File, "Dead: %i (%p)\n", Our_Bot->Dead, (void*)&Our_Bot->Dead);
-  fprintf(Our_File, "x: %.4g (%p)\n", Our_Bot->x, (void*)&Our_Bot->x);
-  fprintf(Our_File, "y: %.4g (%p)\n", Our_Bot->y, (void*)&Our_Bot->y);
-  fprintf(Our_File, "r: %.4g (%p)\n", Our_Bot->r, (void*)&Our_Bot->r);
-  fprintf(Our_File, "Size: %.4g (%p)\n", Our_Bot->Size, (void*)&Our_Bot->Size);
-  fprintf(Our_File, "Turn_Rate: %.4g (%p)\n", Our_Bot->Turn_Rate, (void*)&Our_Bot->Turn_Rate);
-  fprintf(Our_File, "Red: %.4g (%p)\n", Our_Bot->Red, (void*)&Our_Bot->Red);
-  fprintf(Our_File, "Green: %.4g (%p)\n", Our_Bot->Green, (void*)&Our_Bot->Green);
-  fprintf(Our_File, "Blue: %.4g (%p)\n", Our_Bot->Blue, (void*)&Our_Bot->Blue);
+  fprintf(our_File, "energy: %i (%p)\n", our_bot->energy, (void*)&our_bot->energy);
+  fprintf(our_File, "age: %i (%p)\n", our_bot->age, (void*)&our_bot->age);
+  fprintf(our_File, "dead: %i (%p)\n", our_bot->dead, (void*)&our_bot->dead);
+  fprintf(our_File, "x: %.4g (%p)\n", our_bot->x, (void*)&our_bot->x);
+  fprintf(our_File, "y: %.4g (%p)\n", our_bot->y, (void*)&our_bot->y);
+  fprintf(our_File, "r: %.4g (%p)\n", our_bot->r, (void*)&our_bot->r);
+  fprintf(our_File, "size: %.4g (%p)\n", our_bot->size, (void*)&our_bot->size);
+  fprintf(our_File, "turn_rate: %.4g (%p)\n", our_bot->turn_rate, (void*)&our_bot->turn_rate);
+  fprintf(our_File, "red: %.4g (%p)\n", our_bot->red, (void*)&our_bot->red);
+  fprintf(our_File, "green: %.4g (%p)\n", our_bot->green, (void*)&our_bot->green);
+  fprintf(our_File, "blue: %.4g (%p)\n", our_bot->blue, (void*)&our_bot->blue);
 
   // Brain
-  fprintf(Our_File, "NN: (%p)\n", (void*)&Our_Bot->NN);
-  fprintf(Our_File, " NN.Num_Layers: %i (%p)\n",  Our_Bot->NN.Num_Layers, (void*)&Our_Bot->NN.Num_Layers);
-  fprintf(Our_File, " NN.Num_Inputs: %i (%p)\n",  Our_Bot->NN.Num_Inputs, (void*)&Our_Bot->NN.Num_Inputs);
-  fprintf(Our_File, " NN.Num_Outputs: %i (%p)\n", Our_Bot->NN.Num_Outputs, (void*)&Our_Bot->NN.Num_Outputs);
-  fprintf(Our_File, " NN.Input: %p (%p)\n", Our_Bot->NN.Input, (void*)&Our_Bot->NN.Input);
-  fprintf(Our_File, " NN.Output: %p (%p)\n", Our_Bot->NN.Output, (void*)&Our_Bot->NN.Output);
-  fprintf(Our_File, " NN.Weights: %p (%p)\n", Our_Bot->NN.Weights, (void*)&Our_Bot->NN.Weights);
+  fprintf(our_File, "nn: (%p)\n", (void*)&our_bot->nn);
+  fprintf(our_File, " nn.num_layers: %i (%p)\n",  our_bot->nn.num_layers, (void*)&our_bot->nn.num_layers);
+  fprintf(our_File, " nn.num_inputs: %i (%p)\n",  our_bot->nn.num_inputs, (void*)&our_bot->nn.num_inputs);
+  fprintf(our_File, " nn.num_outputs: %i (%p)\n", our_bot->nn.num_outputs, (void*)&our_bot->nn.num_outputs);
+  fprintf(our_File, " nn.input: %p (%p)\n", our_bot->nn.input, (void*)&our_bot->nn.input);
+  fprintf(our_File, " nn.output: %p (%p)\n", our_bot->nn.output, (void*)&our_bot->nn.output);
+  fprintf(our_File, " nn.weights: %p (%p)\n", our_bot->nn.weights, (void*)&our_bot->nn.weights);
 
-  // Eyes
+  // eyes
   int e;
-  fprintf(Our_File, "Num_Eyes: %i (%p)\n", Our_Bot->Num_Eyes, (void*)&Our_Bot->Num_Eyes);
-  fprintf(Our_File, "Eyes: %p (%p)\n", Our_Bot->Eyes, (void*)&Our_Bot->Eyes);
-  for(e = 0; e < Our_Bot->Num_Eyes; ++e)
+  fprintf(our_File, "num_eyes: %i (%p)\n", our_bot->num_eyes, (void*)&our_bot->num_eyes);
+  fprintf(our_File, "eyes: %p (%p)\n", our_bot->eyes, (void*)&our_bot->eyes);
+  for(e = 0; e < our_bot->num_eyes; ++e)
   {
-    fprintf(Our_File, " Eye[%i].Position: %.4g (%p)\n",      e, Our_Bot->Eyes[e].Position,      (void*)&Our_Bot->Eyes[e].Position);
-    fprintf(Our_File, " Eye[%i].View_Distance: %.4g (%p)\n", e, Our_Bot->Eyes[e].View_Distance, (void*)&Our_Bot->Eyes[e].View_Distance);
-    fprintf(Our_File, " Eye[%i].View_Angle: %.4g (%p)\n",    e, Our_Bot->Eyes[e].View_Angle,    (void*)&Our_Bot->Eyes[e].View_Angle);
-    fprintf(Our_File, " Eye[%i].In_Strength: %.4g (%p)\n",   e, Our_Bot->Eyes[e].In_Strength,   (void*)&Our_Bot->Eyes[e].In_Strength);
-    fprintf(Our_File, " Eye[%i].In_Red: %.4g (%p)\n",        e, Our_Bot->Eyes[e].In_Red,        (void*)&Our_Bot->Eyes[e].In_Red);
-    fprintf(Our_File, " Eye[%i].In_Green: %.4g (%p)\n",      e, Our_Bot->Eyes[e].In_Green,      (void*)&Our_Bot->Eyes[e].In_Green);
-    fprintf(Our_File, " Eye[%i].In_Blue: %.4g (%p)\n",       e, Our_Bot->Eyes[e].In_Blue,       (void*)&Our_Bot->Eyes[e].In_Blue);
+    fprintf(our_File, " Eye[%i].position: %.4g (%p)\n",      e, our_bot->eyes[e].position,      (void*)&our_bot->eyes[e].position);
+    fprintf(our_File, " Eye[%i].view_distance: %.4g (%p)\n", e, our_bot->eyes[e].view_distance, (void*)&our_bot->eyes[e].view_distance);
+    fprintf(our_File, " Eye[%i].view_angle: %.4g (%p)\n",    e, our_bot->eyes[e].view_angle,    (void*)&our_bot->eyes[e].view_angle);
+    fprintf(our_File, " Eye[%i].in_strength: %.4g (%p)\n",   e, our_bot->eyes[e].in_strength,   (void*)&our_bot->eyes[e].in_strength);
+    fprintf(our_File, " Eye[%i].in_red: %.4g (%p)\n",        e, our_bot->eyes[e].in_red,        (void*)&our_bot->eyes[e].in_red);
+    fprintf(our_File, " Eye[%i].in_green: %.4g (%p)\n",      e, our_bot->eyes[e].in_green,      (void*)&our_bot->eyes[e].in_green);
+    fprintf(our_File, " Eye[%i].in_blue: %.4g (%p)\n",       e, our_bot->eyes[e].in_blue,       (void*)&our_bot->eyes[e].in_blue);
   }
 
-  // Spikes
-  fprintf(Our_File, "Spikes: (%p)\n", (void*)&Our_Bot->Spikes);
+  // spikes
+  fprintf(our_File, "spikes: (%p)\n", (void*)&our_bot->spikes);
 
-  fprintf(Our_File, "\n");
-  fclose(Our_File);
-  return TRUE;
+  fprintf(our_File, "\n");
+  fclose(our_File);
+  return 0;
 }
 
-int Bot_Create(bot* Our_Bot, float x, float y)
+int bot_create(bot* our_bot, float x, float y)
 {
-  if(Our_Bot == NULL)
-    return FALSE;
+  if(our_bot == NULL)
+    return 0;
 
-  Our_Bot->x = x;
-  Our_Bot->y = y;
-  Our_Bot->Age = 0;
-  Our_Bot->Size = 1;
-  Our_Bot->Dead = FALSE;
-  Our_Bot->Red   = RAND_BETWEEN(0.0, 1.0);
-  Our_Bot->Green = RAND_BETWEEN(0.0, 1.0);
-  Our_Bot->Blue  = RAND_BETWEEN(0.0, 1.0);
-  Our_Bot->Energy = BOT_START_ENERGY;
-  Our_Bot->r = RAND_BETWEEN(0.0, 360.0);
-  Our_Bot->Turn_Rate = 3.0;
-  // Eyes
-  Our_Bot->Num_Eyes = 3;
-  Our_Bot->Eyes = (eye*) malloc(Our_Bot->Num_Eyes*sizeof(eye));
-  Our_Bot->Eyes[0].Position =  15;
-  Our_Bot->Eyes[1].Position = 345;
-  Our_Bot->Eyes[2].Position = 180;
-  Our_Bot->Eyes[0].View_Angle = 30;
-  Our_Bot->Eyes[1].View_Angle = 30;
-  Our_Bot->Eyes[2].View_Angle = 15;
-  Our_Bot->Eyes[0].View_Distance = 2.5;
-  Our_Bot->Eyes[1].View_Distance = 2.5;
-  Our_Bot->Eyes[2].View_Distance = 2.5;
-  // Spikes
-  Our_Bot->Num_Spikes = 1;
-  Our_Bot->Spikes = (spike*) malloc(Our_Bot->Num_Spikes*sizeof(spike));
-  Our_Bot->Spikes[0].Position = 0;
-  Our_Bot->Spikes[0].Length = RAND_BETWEEN(0.0, 0.2);
-  // NN
-  Our_Bot->NN.Num_Layers = 3;
-  Our_Bot->NN.Layer_Sizes = (int*) malloc(3*sizeof(int));
-  Our_Bot->NN.Layer_Sizes[0] = 13;
-  Our_Bot->NN.Layer_Sizes[1] = 7;
-  Our_Bot->NN.Layer_Sizes[2] = 3;
+  our_bot->x = x;
+  our_bot->y = y;
+  our_bot->age = 0;
+  our_bot->size = 1;
+  our_bot->dead = 0;
+  our_bot->red   = RAND_BETWEEN(0.0, 1.0);
+  our_bot->green = RAND_BETWEEN(0.0, 1.0);
+  our_bot->blue  = RAND_BETWEEN(0.0, 1.0);
+  our_bot->energy = BOT_START_ENERGY;
+  our_bot->r = RAND_BETWEEN(0.0, 360.0);
+  our_bot->turn_rate = 3.0;
+  // eyes
+  our_bot->num_eyes = 3;
+  our_bot->eyes = (eye*) malloc(our_bot->num_eyes*sizeof(eye));
+  our_bot->eyes[0].position =  15;
+  our_bot->eyes[1].position = 345;
+  our_bot->eyes[2].position = 180;
+  our_bot->eyes[0].view_angle = 30;
+  our_bot->eyes[1].view_angle = 30;
+  our_bot->eyes[2].view_angle = 15;
+  our_bot->eyes[0].view_distance = 2.5;
+  our_bot->eyes[1].view_distance = 2.5;
+  our_bot->eyes[2].view_distance = 2.5;
+  // spikes
+  our_bot->num_spikes = 1;
+  our_bot->spikes = (spike*) malloc(our_bot->num_spikes*sizeof(spike));
+  our_bot->spikes[0].position = 0;
+  our_bot->spikes[0].length = RAND_BETWEEN(0.0, 0.2);
+  // nn
+  our_bot->nn.num_layers = 3;
+  our_bot->nn.layer_sizes = (int*) malloc(3*sizeof(int));
+  our_bot->nn.layer_sizes[0] = 13;
+  our_bot->nn.layer_sizes[1] = 7;
+  our_bot->nn.layer_sizes[2] = 3;
 
-  NN_Create(&Our_Bot->NN);
-  NN_Random_Weights(&Our_Bot->NN, -1.0, 1.0);
+  nn_create(&our_bot->nn);
+  nn_random_weights(&our_bot->nn, -1.0, 1.0);
 
-  return TRUE;
+  return 0;
 }
 
-int Bot_Add(world* Our_World, float x, float y)
+int bot_add(world* our_world, float x, float y)
 {
-  if(Our_World->Num_Bots >= Our_World->Max_Bots)
-    return FALSE;
+  if(our_world->num_bots >= our_world->max_bots)
+    return 0;
 
-  if(x < 0) x = RAND_BETWEEN(0, Our_World->Width);
-  if(y < 0) y = RAND_BETWEEN(0, Our_World->Height);
+  if(x < 0) x = RAND_BETWEEN(0, our_world->width);
+  if(y < 0) y = RAND_BETWEEN(0, our_world->height);
 
   //printf("%.4g %.4g\n", x, y);
   //getchar();
 
-  Bot_Create(&Our_World->Bots[Our_World->Num_Bots], x, y);
+  bot_create(&our_world->bots[our_world->num_bots], x, y);
 
-  // World stats
-  Our_World->Bots_Added++;
-  Our_World->Num_Bots++;
-  Our_World->Num_Bots_Alive++;
+  // world stats
+  our_world->bots_added++;
+  our_world->num_bots++;
+  our_world->num_bots_alive++;
 
-  //printf("Add_Bot() %.4g %.4g\n", Our_World->Bots[Our_World->Num_Bots].x, Our_World->Bots[Our_World->Num_Bots].y);
+  //printf("add_bot() %.4g %.4g\n", our_world->bots[our_world->num_bots].x, our_world->bots[our_world->num_bots].y);
 
-  return TRUE;
+  return 0;
 }

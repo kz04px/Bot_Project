@@ -8,11 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <process.h>  // _beginthread()
-#include <time.h>     // time(0)
+#include <time.h>     // time()
 #include <math.h>     // sqrt()
 
-#define TRUE  1
-#define FALSE 0
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define RAND_BETWEEN(a,b) ((b-a)*((float)rand()/RAND_MAX)+a)
@@ -28,178 +26,184 @@
 
 typedef struct
 {
-  int Eye_Offset;
-  int Spike_Offset;
-  int Num_Layers;
-  int Num_Inputs;
-  int Num_Outputs;
-  int *Layer_Sizes;
-  double **Input;
-  double **Output;
-  double ***Weights;
+  int eye_offset;
+  int spike_offset;
+  int num_layers;
+  int num_inputs;
+  int num_outputs;
+  int *layer_sizes;
+  double **input;
+  double **output;
+  double ***weights;
 } neural_network;
 
 typedef struct
 {
   float x;
   float y;
-  //int Energy;
-  //int Age;
-  int Nutrition;
-  float Size;
-  float Red;
-  float Green;
-  float Blue;
+  //int energy;
+  //int age;
+  int nutrition;
+  float size;
+  float red;
+  float green;
+  float blue;
 } pellet;
 
 typedef struct
 {
-  float Position;
-  float View_Distance;
-  float View_Angle;
-  float Red;
-  float Green;
-  float Blue;
+  float position;
+  float view_distance;
+  float view_angle;
+  float red;
+  float green;
+  float blue;
   // What it sees
-  float In_Strength;
-  float In_Red;
-  float In_Green;
-  float In_Blue;
+  float in_strength;
+  float in_red;
+  float in_green;
+  float in_blue;
 } eye;
 
 typedef struct
 {
-  int Retracted;
-  float Position;
-  float Length;
-  //float Red;
-  //float Green;
-  //float Blue;
+  int retracted;
+  float position;
+  float length;
+  //float red;
+  //float green;
+  //float blue;
 } spike;
 
 typedef struct
 {
   // General
-  int Energy;
-  int Age;
-  int Dead;
-  // Position
+  int energy;
+  int age;
+  int dead;
+  // position
   float x;
   float y;
   float r;
-  float Size;
-  float Turn_Rate;
+  float size;
+  float turn_rate;
   // Colour
-  float Red;
-  float Green;
-  float Blue;
+  float red;
+  float green;
+  float blue;
   // brain
-  neural_network NN;
+  neural_network nn;
   // eyes
-  int Num_Eyes;
-  eye *Eyes;
+  int num_eyes;
+  eye *eyes;
   // spikes
-  int Num_Spikes;
-  spike *Spikes;
+  int num_spikes;
+  spike *spikes;
 } bot;
 
 typedef struct
 {
-	// Normal
-	int Time_Seed;
-	int Width;
-	int Height;
-	int Selected;
-	// Stats
-	int Generation;
-	int Frame;
-	int Bots_Added;
-	int Bots_Removed;
-	int Bots_Most;
-	int Pellets_Added;
-	int Pellets_Removed;
-	int Pellets_Most;
-	// Bots
-	int Num_Bots;
-	int Max_Bots;
-	int Num_Bots_Alive;
-	int Num_Parents;
-	bot* Bots;
-	bot* Bot_Parents;
-	int* Bot_Ranks;
-	// Pellets
-	int Num_Pellets;
-	int Max_Pellets;
-	pellet* Pellets;
-	// Grid
-	int Grid_Width;
-	int Grid_Height;
-	//grid** Grid;
+  // Normal
+  int seed;
+  int width;
+  int height;
+  int selected;
+  // stats
+  int generation;
+  int frame;
+  int bots_added;
+  int bots_removed;
+  int bots_most;
+  int pellets_added;
+  int pellets_removed;
+  int pellets_most;
+  // bots
+  int num_bots;
+  int max_bots;
+  int num_bots_alive;
+  int num_parents;
+  bot* bots;
+  bot* bot_parents;
+  int* bot_ranks;
+  // pellets
+  int num_pellets;
+  int max_pellets;
+  pellet* pellets;
+  // grid
+  int grid_width;
+  int grid_height;
+  //grid** grid;
 } world;
 
 typedef struct
 {
   HWND hWnd;
-  HWND hStatistics;
+  HWND hstatistics;
   HDC hDC;
   HGLRC hRC;
-  world *World;
-	int Display;
-	int Display_Statistics;
-	int w;
-	int h;
+  world *world;
+  int display;
+  int display_statistics;
+  int w;
+  int h;
   float r;
-	float View_X;
-	float View_Y;
-	float View_Zoom;
-	int Quit;
+  float view_X;
+  float view_Y;
+  float view_zoom;
+  int quit;
 } render_parameters;
 
 typedef struct
 {
-  world *World;
-  int Pause;
-  int Quit;
-  float Delay;
-  int Logging;
-  FILE* Log_File;
+  world *world;
+  int pause;
+  int quit;
+  float delay;
+  int logging;
+  FILE* log_file;
 } simulation_parameters;
 
 render_parameters Main;
-render_parameters Viewer;
-simulation_parameters Simulation;
+render_parameters viewer;
+simulation_parameters simulation;
 
-float Angle_Difference(float x, float y);
+float angle_difference(float x, float y);
+
 // world.c
-int World_Init(world* Our_World);
+int world_init(world* our_world);
+
 // simulation.c
-int Simulation_Init(world *Our_World);
-int Simulation_End(world* Our_World);
-void Simulate_World(void*);
+int simulation_init(world *our_world);
+int simulation_end(world* our_world);
+void simulate_world(void*);
+
 // bots.c
-void Bot_Ranks(world* Our_World);
-void Bots_Breed_New_Generation(world* Our_World);
-int Bot_Create(bot* Our_Bot, float x, float y);
-int Bot_Dump(bot* Our_Bot);
-int Bot_Mutate(bot *Our_Bot);
-int Bot_Kill(world* Our_World, int b);
-void Draw_Edge_Bots(world *Our_World);
-int Bot_Scramble(world* Our_World, int n);
-int Bot_Remove(world* Our_World, int n);
-int Bot_Add(world* Our_World, float x, float y);
-int Bot_Find_Closest(world* Our_World, float x, float y);
+void bot_ranks(world* our_world);
+void bots_breed_new_generation(world* our_world);
+int bot_create(bot* our_bot, float x, float y);
+int bot_dump(bot* our_bot);
+int bot_mutate(bot *our_bot);
+int bot_kill(world* our_world, int b);
+void draw_edge_bots(world *our_world);
+int bot_scramble(world* our_world, int n);
+int bot_remove(world* our_world, int n);
+int bot_add(world* our_world, float x, float y);
+int bot_find_closest(world* our_world, float x, float y);
+
 // pellets.c
-int Pellet_Add(world* Our_World, float x, float y);
-int Pellet_Remove(world* Our_World, int p);
+int pellet_add(world* our_world, float x, float y);
+int pellet_remove(world* our_world, int p);
+
 // render.c
-int Main_Init(world *Our_World, int w, int h);
-int Viewer_Init(world *Our_World, int w, int h);
-void Render_Main(void* a);
-void Render_Viewer(void* a);
+int main_init(world *our_world, int w, int h);
+int viewer_init(world *our_world, int w, int h);
+void render_Main(void* a);
+void render_viewer(void* a);
+
 // neural network.c
-int NN_Mutate(neural_network* Network);
-void NN_Create(neural_network* NN);
-void Update_Bots_NNs(world* Our_World);
-void NN_Random_Weights(neural_network* Our_NN, double Min, double Max);
+int nn_mutate(neural_network* network);
+void nn_create(neural_network* nn);
+void update_bots_nns(world* our_world);
+void nn_random_weights(neural_network* our_nn, double min, double max);
 
 #endif // DEFS_H_INCLUDED

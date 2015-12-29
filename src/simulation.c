@@ -1,6 +1,6 @@
 #include "defs.h"
 
-float Angle_Difference(float x, float y)
+float angle_difference(float x, float y)
 {
   float Dif = x-y;
   NORMALISE_DEG(Dif);
@@ -10,143 +10,143 @@ float Angle_Difference(float x, float y)
     return Dif;
 }
 
-int Simulation_End(world* Our_World)
+int simulation_end(world* our_world)
 {
- 	Simulation.World = NULL;
- 	Simulation.Pause = TRUE;
- 	Simulation.Quit = TRUE;
- 	Simulation.Delay = 20;
- 	Simulation.Logging = FALSE;
- 	fclose(Simulation.Log_File);
-  return TRUE;
+  simulation.world = NULL;
+  simulation.pause = 1;
+  simulation.quit = 1;
+  simulation.delay = 20;
+  simulation.logging = 0;
+  fclose(simulation.log_file);
+  return 0;
 }
 
-int Simulation_Init(world* Our_World)
+int simulation_init(world* our_world)
 {
- 	Simulation.World = Our_World;
- 	Simulation.Pause = TRUE;
- 	Simulation.Quit = FALSE;
- 	Simulation.Delay = 20;
- 	Simulation.Logging = TRUE;
- 	Simulation.Log_File = fopen("Log.txt", "w");
-  return TRUE;
+  simulation.world = our_world;
+  simulation.pause = 1;
+  simulation.quit = 0;
+  simulation.delay = 20;
+  simulation.logging = 1;
+  simulation.log_file = fopen("Log.txt", "w");
+  return 0;
 }
 
-void Update_Bots_Positions(world* Our_World)
+void update_bots_positions(world* our_world)
 {
   int b;
-  for(b = 0; b < Our_World->Num_Bots; ++b)
+  for(b = 0; b < our_world->num_bots; ++b)
   {
-    if(Our_World->Bots[b].Dead == TRUE)
+    if(our_world->bots[b].dead)
       continue;
 
-    // Update position & rotation (NN)
-    Our_World->Bots[b].x += 0.1 * Our_World->Bots[b].NN.Output[Our_World->Bots[b].NN.Num_Layers-1][0] * sin(DEG_TO_RAD(Our_World->Bots[b].r));
-    Our_World->Bots[b].y += 0.1 * Our_World->Bots[b].NN.Output[Our_World->Bots[b].NN.Num_Layers-1][0] * cos(DEG_TO_RAD(Our_World->Bots[b].r));
-    Our_World->Bots[b].r += Our_World->Bots[b].Turn_Rate*(Our_World->Bots[b].NN.Output[Our_World->Bots[b].NN.Num_Layers-1][1]-0.5);
+    // update position & rotation (nn)
+    our_world->bots[b].x += 0.1 * our_world->bots[b].nn.output[our_world->bots[b].nn.num_layers-1][0] * sin(DEG_TO_RAD(our_world->bots[b].r));
+    our_world->bots[b].y += 0.1 * our_world->bots[b].nn.output[our_world->bots[b].nn.num_layers-1][0] * cos(DEG_TO_RAD(our_world->bots[b].r));
+    our_world->bots[b].r += our_world->bots[b].turn_rate*(our_world->bots[b].nn.output[our_world->bots[b].nn.num_layers-1][1]-0.5);
 
-    // Position & rotation checks
-    if(Simulation.World->Bots[b].x < 0)
-      Simulation.World->Bots[b].x += Simulation.World->Width;
-    else if(Simulation.World->Bots[b].x > Simulation.World->Width)
-      Simulation.World->Bots[b].x -= Simulation.World->Width;
+    // position & rotation checks
+    if(simulation.world->bots[b].x < 0)
+      simulation.world->bots[b].x += simulation.world->width;
+    else if(simulation.world->bots[b].x > simulation.world->width)
+      simulation.world->bots[b].x -= simulation.world->width;
 
-    if(Simulation.World->Bots[b].y < 0)
-      Simulation.World->Bots[b].y += Simulation.World->Height;
-    else if(Simulation.World->Bots[b].y > Simulation.World->Height)
-      Simulation.World->Bots[b].y -= Simulation.World->Height;
+    if(simulation.world->bots[b].y < 0)
+      simulation.world->bots[b].y += simulation.world->height;
+    else if(simulation.world->bots[b].y > simulation.world->height)
+      simulation.world->bots[b].y -= simulation.world->height;
 
-    if(Simulation.World->Bots[b].r < 0)
-      Simulation.World->Bots[b].r += 360;
-    else if(Simulation.World->Bots[b].r > 360)
-      Simulation.World->Bots[b].r -= 360;
+    if(simulation.world->bots[b].r < 0)
+      simulation.world->bots[b].r += 360;
+    else if(simulation.world->bots[b].r > 360)
+      simulation.world->bots[b].r -= 360;
   }
 }
 
-void Update_Bots_Inputs(world* Our_World)
+void update_bots_inputs(world* our_world)
 {
   int b, b2, e, p;
-  for(b = 0; b < Simulation.World->Num_Bots; ++b)
+  for(b = 0; b < simulation.world->num_bots; ++b)
   {
-    if(Our_World->Bots[b].Dead == TRUE)
+    if(our_world->bots[b].dead)
       continue;
 
     // Resets
-    for(e = 0; e < Simulation.World->Bots[b].Num_Eyes; ++e)
+    for(e = 0; e < simulation.world->bots[b].num_eyes; ++e)
     {
-      Simulation.World->Bots[b].Eyes[e].In_Strength = 0.0; //Simulation.World->Bots[b].Eyes[e].View_Distance;
-      Simulation.World->Bots[b].Eyes[e].In_Red = 0.0;
-      Simulation.World->Bots[b].Eyes[e].In_Green = 0.0;
-      Simulation.World->Bots[b].Eyes[e].In_Blue = 0.0;
+      simulation.world->bots[b].eyes[e].in_strength = 0.0; //simulation.world->bots[b].eyes[e].view_distance;
+      simulation.world->bots[b].eyes[e].in_red = 0.0;
+      simulation.world->bots[b].eyes[e].in_green = 0.0;
+      simulation.world->bots[b].eyes[e].in_blue = 0.0;
     }
 
     // Look for pellets
-    for(p = 0; p < Our_World->Num_Pellets; ++p)
+    for(p = 0; p < our_world->num_pellets; ++p)
     {
-      float dx = Our_World->Pellets[p].x - Our_World->Bots[b].x;
-      float dy = Our_World->Pellets[p].y - Our_World->Bots[b].y;
+      float dx = our_world->pellets[p].x - our_world->bots[b].x;
+      float dy = our_world->pellets[p].y - our_world->bots[b].y;
       float Dist = sqrt(dx*dx + dy*dy);
       float Angle = 0;
       if(dy == 0)
       {
-        if(dx >= 0) {Angle =  90 - Our_World->Bots[b].r;}
-        if(dx <  0) {Angle = 270 - Our_World->Bots[b].r;}
+        if(dx >= 0) {Angle =  90 - our_world->bots[b].r;}
+        if(dx <  0) {Angle = 270 - our_world->bots[b].r;}
       }
       else
       {
-        Angle = RAD_TO_DEG(atan(dx/dy)) - Our_World->Bots[b].r;
+        Angle = RAD_TO_DEG(atan(dx/dy)) - our_world->bots[b].r;
         if(dy < 0) Angle += 180;
       }
       NORMALISE_DEG(Angle);
 
-      // Eyes
-      for(e = 0; e < Our_World->Bots[b].Num_Eyes; ++e)
+      // eyes
+      for(e = 0; e < our_world->bots[b].num_eyes; ++e)
       {
-        if(Angle_Difference(Angle, Our_World->Bots[b].Eyes[e].Position) <= Our_World->Bots[b].Eyes[e].View_Angle &&
-          (Our_World->Bots[b].Eyes[e].View_Distance-Dist)/Our_World->Bots[b].Eyes[e].View_Distance > Our_World->Bots[b].Eyes[e].In_Strength)
-          //Dist < Our_World->Bots[b].Eyes[e].In_Strength)
+        if(angle_difference(Angle, our_world->bots[b].eyes[e].position) <= our_world->bots[b].eyes[e].view_angle &&
+          (our_world->bots[b].eyes[e].view_distance-Dist)/our_world->bots[b].eyes[e].view_distance > our_world->bots[b].eyes[e].in_strength)
+          //Dist < our_world->bots[b].eyes[e].in_strength)
         {
-        //Our_World->Bots[b].Eyes[e].In_Strength = Dist;
-        Our_World->Bots[b].Eyes[e].In_Strength = (Our_World->Bots[b].Eyes[e].View_Distance-Dist)/Our_World->Bots[b].Eyes[e].View_Distance;
-        Our_World->Bots[b].Eyes[e].In_Red   = Our_World->Pellets[p].Red;
-        Our_World->Bots[b].Eyes[e].In_Green = Our_World->Pellets[p].Green;
-        Our_World->Bots[b].Eyes[e].In_Blue  = Our_World->Pellets[p].Blue;
+        //our_world->bots[b].eyes[e].in_strength = Dist;
+        our_world->bots[b].eyes[e].in_strength = (our_world->bots[b].eyes[e].view_distance-Dist)/our_world->bots[b].eyes[e].view_distance;
+        our_world->bots[b].eyes[e].in_red   = our_world->pellets[p].red;
+        our_world->bots[b].eyes[e].in_green = our_world->pellets[p].green;
+        our_world->bots[b].eyes[e].in_blue  = our_world->pellets[p].blue;
         }
       }
     }
 
     // Look for bots
     /*
-    for(b2 = 0; b2 < Our_World->Num_Bots; ++b2)
+    for(b2 = 0; b2 < our_world->num_bots; ++b2)
     {
       if(b2 == b) continue; // We can't see ourself
 
-      float dx = Our_World->Bots[b2].x - Our_World->Bots[b].x;
-      float dy = Our_World->Bots[b2].y - Our_World->Bots[b].y;
+      float dx = our_world->bots[b2].x - our_world->bots[b].x;
+      float dy = our_world->bots[b2].y - our_world->bots[b].y;
       float Dist = sqrt(dx*dx + dy*dy);
       float Angle = 0;
       if(dy == 0)
       {
-        if(dx >= 0) {Angle =  90 - Our_World->Bots[b].r;}
-        if(dx <  0) {Angle = 270 - Our_World->Bots[b].r;}
+        if(dx >= 0) {Angle =  90 - our_world->bots[b].r;}
+        if(dx <  0) {Angle = 270 - our_world->bots[b].r;}
       }
       else
       {
-        Angle = RAD_TO_DEG(atan(dx/dy)) - Our_World->Bots[b].r;
+        Angle = RAD_TO_DEG(atan(dx/dy)) - our_world->bots[b].r;
         if(dy < 0) Angle += 180;
       }
       NORMALISE_DEG(Angle);
 
-      // Eyes
-      for(e = 0; e < Our_World->Bots[b].Num_Eyes; ++e)
+      // eyes
+      for(e = 0; e < our_world->bots[b].num_eyes; ++e)
       {
-        if(Angle_Difference(Angle, Our_World->Bots[b].Eyes[e].Position) <= Our_World->Bots[b].Eyes[e].View_Angle &&
-          Dist < Our_World->Bots[b].Eyes[e].In_Strength)
+        if(angle_difference(Angle, our_world->bots[b].eyes[e].position) <= our_world->bots[b].eyes[e].view_angle &&
+          Dist < our_world->bots[b].eyes[e].in_strength)
         {
-        Our_World->Bots[b].Eyes[e].In_Strength = Dist;
-        Our_World->Bots[b].Eyes[e].In_Red   = Our_World->Bots[b2].Red;
-        Our_World->Bots[b].Eyes[e].In_Green = Our_World->Bots[b2].Green;
-        Our_World->Bots[b].Eyes[e].In_Blue  = Our_World->Bots[b2].Blue;
+        our_world->bots[b].eyes[e].in_strength = Dist;
+        our_world->bots[b].eyes[e].in_red   = our_world->bots[b2].red;
+        our_world->bots[b].eyes[e].in_green = our_world->bots[b2].green;
+        our_world->bots[b].eyes[e].in_blue  = our_world->bots[b2].blue;
         }
       }
     }
@@ -154,20 +154,20 @@ void Update_Bots_Inputs(world* Our_World)
   }
 }
 
-void Update_Pellets(world* Our_World)
+void update_pellets(world* our_world)
 {
   int p, b;
-  for(p = 0; p < Our_World->Num_Pellets; ++p)
+  for(p = 0; p < our_world->num_pellets; ++p)
   {
-    for(b = 0; b < Our_World->Num_Bots; ++b)
+    for(b = 0; b < our_world->num_bots; ++b)
     {
-      if(DIST(Our_World->Pellets[p].x, Our_World->Pellets[p].y,
-              Our_World->Bots[b].x, Our_World->Bots[b].y) < 0.15)
+      if(DIST(our_world->pellets[p].x, our_world->pellets[p].y,
+              our_world->bots[b].x,    our_world->bots[b].y) < 0.15)
       {
-        Our_World->Bots[b].Energy += Our_World->Pellets[p].Nutrition;
+        our_world->bots[b].energy += our_world->pellets[p].nutrition;
 
-        Pellet_Remove(Our_World, p);
-        Pellet_Add(Our_World, -1, -1);
+        pellet_remove(our_world, p);
+        pellet_add(our_world, -1, -1);
         p--;
         break;
       }
@@ -175,74 +175,74 @@ void Update_Pellets(world* Our_World)
   }
 }
 
-void Simulate_World(void* a)
+void simulate_world(void* a)
 {
-  while(Simulation.Quit == FALSE)
+  while(!simulation.quit)
   {
-    if(Simulation.Pause == TRUE)
+    if(simulation.pause)
     {
-      Update_Bots_Inputs(Simulation.World);
+      update_bots_inputs(simulation.world);
       Sleep(100);
       continue;
     }
 
-    Update_Bots_Inputs(Simulation.World);
-    Update_Bots_NNs(Simulation.World);
-    Update_Bots_Positions(Simulation.World);
-    Update_Pellets(Simulation.World);
+    update_bots_inputs(simulation.world);
+    update_bots_nns(simulation.world);
+    update_bots_positions(simulation.world);
+    update_pellets(simulation.world);
 
     int b;
-    // Energy
-    for(b = 0; b < Simulation.World->Num_Bots; ++b)
+    // energy
+    for(b = 0; b < simulation.world->num_bots; ++b)
     {
-      if(Simulation.World->Bots[b].Dead == TRUE)
+      if(simulation.world->bots[b].dead)
         continue;
 
-      if(Simulation.World->Bots[b].Energy <= 0)
-        Bot_Kill(Simulation.World, b);
+      if(simulation.world->bots[b].energy <= 0)
+        bot_kill(simulation.world, b);
       else
-        Simulation.World->Bots[b].Energy--;
+        simulation.world->bots[b].energy--;
     }
 
-    // Age
-    for(b = 0; b < Simulation.World->Num_Bots; ++b)
+    // age
+    for(b = 0; b < simulation.world->num_bots; ++b)
     {
-      if(Simulation.World->Bots[b].Dead == TRUE)
+      if(simulation.world->bots[b].dead)
         continue;
 
-      Simulation.World->Bots[b].Age++;
+      simulation.world->bots[b].age++;
     }
 
     // Next generation check
-    if(Simulation.World->Num_Bots_Alive <= Simulation.World->Num_Parents ||
-       Simulation.World->Frame >= 2000)
+    if(simulation.world->num_bots_alive <= simulation.world->num_parents ||
+       simulation.world->frame >= 2000)
     {
-      // Rank the bots
-      Bot_Ranks(Simulation.World);
+      // rank the bots
+      bot_ranks(simulation.world);
       printf("Best: ");
-      for(b = 0; b < Simulation.World->Num_Bots; ++b)
-        printf("%i ", Simulation.World->Bot_Ranks[b]);
+      for(b = 0; b < simulation.world->num_bots; ++b)
+        printf("%i ", simulation.world->bot_ranks[b]);
       printf("\n");
 
-      // Breed new generation
-      Bots_Breed_New_Generation(Simulation.World);
-      Simulation.World->Num_Bots_Alive = Simulation.World->Num_Bots;
+      // breed new generation
+      bots_breed_new_generation(simulation.world);
+      simulation.world->num_bots_alive = simulation.world->num_bots;
 
-      // Logging
-      fprintf(Simulation.Log_File, "%i\t %i\t\n", Simulation.World->Generation, Simulation.World->Pellets_Removed);
+      // logging
+      fprintf(simulation.log_file, "%i\t %i\t\n", simulation.world->generation, simulation.world->pellets_removed);
 
       // Reset logging
-      Simulation.World->Pellets_Removed = 0;
+      simulation.world->pellets_removed = 0;
 
       // Next generation
-      Simulation.World->Generation++;
-      Simulation.World->Frame = 0;
+      simulation.world->generation++;
+      simulation.world->frame = 0;
     }
     else
     {
-      Simulation.World->Frame++;
+      simulation.world->frame++;
     }
 
-    Sleep(Simulation.Delay);
+    Sleep(simulation.delay);
   }
 }

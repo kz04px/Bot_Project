@@ -1,151 +1,151 @@
 #include "defs.h"
 
-double **Make_2D_Array(int X_Size, int *Y_Sizes) // Variable column heights, since the number of layers is fixed but nodes/layer is not
+double **make_2d_array(int x_size, int *y_sizes) // Variable column heights, since the number of layers is fixed but nodes/layer is not
 {
   int i;
-  double **New_Array = (double **) malloc(X_Size*sizeof(double *));
-  for(i = 0; i < X_Size; ++i)
+  double **new_Array = (double **) malloc(x_size*sizeof(double *));
+  for(i = 0; i < x_size; ++i)
   {
-    New_Array[i] = (double *) malloc(Y_Sizes[i]*sizeof(double));
+    new_Array[i] = (double *) malloc(y_sizes[i]*sizeof(double));
   }
-  return New_Array;
+  return new_Array;
 }
 
-double ***Make_3D_Array(int X_Size, int *Y_Sizes) // 3rd dimension is equal to the number of connections backwards
+double ***make_3d_array(int x_size, int *y_sizes) // 3rd dimension is equal to the number of connections backwards
 {
   int i, j;
-  double ***New_Array = (double ***) malloc(X_Size*sizeof(double **));
-  for(i = 0; i < X_Size; ++i)
+  double ***new_Array = (double ***) malloc(x_size*sizeof(double **));
+  for(i = 0; i < x_size; ++i)
   {
-    New_Array[i] = (double **) malloc(Y_Sizes[i]*sizeof(double *));
-  for(j = 0; j < Y_Sizes[i] && i > 0; ++j)
+    new_Array[i] = (double **) malloc(y_sizes[i]*sizeof(double *));
+  for(j = 0; j < y_sizes[i] && i > 0; ++j)
     {
-      New_Array[i][j] = (double *) malloc(Y_Sizes[i-1]*sizeof(double));
+      new_Array[i][j] = (double *) malloc(y_sizes[i-1]*sizeof(double));
     }
   }
-  return New_Array;
+  return new_Array;
 }
 
-int NN_Mutate(neural_network* Network)
+int nn_mutate(neural_network* network)
 {
   int i, j, k;
-  for(i = 1; i < Network->Num_Layers; ++i)
+  for(i = 1; i < network->num_layers; ++i)
   {
-    for(j = 0; j < Network->Layer_Sizes[i]; ++j)
+    for(j = 0; j < network->layer_sizes[i]; ++j)
     {
-      for(k = 0; k < Network->Layer_Sizes[i-1]; ++k)
+      for(k = 0; k < network->layer_sizes[i-1]; ++k)
       {
-        Network->Weights[i][j][k] += RAND_BETWEEN(-0.1, 0.1);
+        network->weights[i][j][k] += RAND_BETWEEN(-0.1, 0.1);
       }
     }
   }
   return 0;
 }
 
-void NN_Create(neural_network* NN)
+void nn_create(neural_network* nn)
 {
-  NN->Eye_Offset = 1;
-  NN->Spike_Offset = NN->Eye_Offset + 3*4;
-  NN->Num_Inputs = NN->Layer_Sizes[0];
-  NN->Num_Outputs = NN->Layer_Sizes[NN->Num_Layers-1];
-  NN->Input = Make_2D_Array(NN->Num_Layers, NN->Layer_Sizes);
-  NN->Output = Make_2D_Array(NN->Num_Layers, NN->Layer_Sizes);
-  NN->Weights = Make_3D_Array(NN->Num_Layers, NN->Layer_Sizes);
+  nn->eye_offset = 1;
+  nn->spike_offset = nn->eye_offset + 3*4;
+  nn->num_inputs = nn->layer_sizes[0];
+  nn->num_outputs = nn->layer_sizes[nn->num_layers-1];
+  nn->input = make_2d_array(nn->num_layers, nn->layer_sizes);
+  nn->output = make_2d_array(nn->num_layers, nn->layer_sizes);
+  nn->weights = make_3d_array(nn->num_layers, nn->layer_sizes);
 }
 
-void NN_Random_Weights(neural_network* Our_NN, double Min, double Max)
+void nn_random_weights(neural_network* our_nn, double min, double max)
 {
   int i, j, k;
-  for(i = 1; i < Our_NN->Num_Layers; ++i)
+  for(i = 1; i < our_nn->num_layers; ++i)
   {
-    for(j = 0; j < Our_NN->Layer_Sizes[i]; ++j)
+    for(j = 0; j < our_nn->layer_sizes[i]; ++j)
     {
-      for(k = 0; k < Our_NN->Layer_Sizes[i-1]; ++k)
+      for(k = 0; k < our_nn->layer_sizes[i-1]; ++k)
       {
-        Our_NN->Weights[i][j][k] = RAND_BETWEEN(Min, Max);
+        our_nn->weights[i][j][k] = RAND_BETWEEN(min, max);
       }
     }
   }
 }
 
-void NN_Set_Inputs(bot* Our_Bot)
+void nn_set_inputs(bot* our_bot)
 {
-  Our_Bot->NN.Input[0][0] = RAND_BETWEEN(0.0, 1.0);
+  our_bot->nn.input[0][0] = RAND_BETWEEN(0.0, 1.0);
 
-  // Eyes
+  // eyes
   int e;
-  for(e = 0; e < Our_Bot->Num_Eyes; ++e)
+  for(e = 0; e < our_bot->num_eyes; ++e)
   {
-    Our_Bot->NN.Input[0][Our_Bot->NN.Eye_Offset + 4*e+0] = Our_Bot->Eyes[e].In_Strength;
-    Our_Bot->NN.Input[0][Our_Bot->NN.Eye_Offset + 4*e+1] = Our_Bot->Eyes[e].In_Red;
-    Our_Bot->NN.Input[0][Our_Bot->NN.Eye_Offset + 4*e+2] = Our_Bot->Eyes[e].In_Green;
-    Our_Bot->NN.Input[0][Our_Bot->NN.Eye_Offset + 4*e+3] = Our_Bot->Eyes[e].In_Blue;
+    our_bot->nn.input[0][our_bot->nn.eye_offset + 4*e+0] = our_bot->eyes[e].in_strength;
+    our_bot->nn.input[0][our_bot->nn.eye_offset + 4*e+1] = our_bot->eyes[e].in_red;
+    our_bot->nn.input[0][our_bot->nn.eye_offset + 4*e+2] = our_bot->eyes[e].in_green;
+    our_bot->nn.input[0][our_bot->nn.eye_offset + 4*e+3] = our_bot->eyes[e].in_blue;
   }
 }
 
-void NN_Basic(neural_network* Our_NN)
+void nn_Basic(neural_network* our_nn)
 {
-  Our_NN->Output[Our_NN->Num_Layers-1][0] = 1;
-  Our_NN->Output[Our_NN->Num_Layers-1][1] = 0.5;
-  Our_NN->Output[Our_NN->Num_Layers-1][2] = 0;
+  our_nn->output[our_nn->num_layers-1][0] = 1;
+  our_nn->output[our_nn->num_layers-1][1] = 0.5;
+  our_nn->output[our_nn->num_layers-1][2] = 0;
 }
 
-void NN_Intermediate(neural_network* Our_NN)
+void nn_Intermediate(neural_network* our_nn)
 {
-  if(Our_NN->Input[0][Our_NN->Eye_Offset] > Our_NN->Input[0][Our_NN->Eye_Offset + 4]) // First eye > Second eye
+  if(our_nn->input[0][our_nn->eye_offset] > our_nn->input[0][our_nn->eye_offset + 4]) // First eye > Second eye
   {
-    Our_NN->Output[Our_NN->Num_Layers-1][0] = 0.25;
-    Our_NN->Output[Our_NN->Num_Layers-1][1] = 1; // FIXME: 1
-    Our_NN->Output[Our_NN->Num_Layers-1][2] = 0;
+    our_nn->output[our_nn->num_layers-1][0] = 0.25;
+    our_nn->output[our_nn->num_layers-1][1] = 1; // FIXME: 1
+    our_nn->output[our_nn->num_layers-1][2] = 0;
   }
-  else if(Our_NN->Input[0][Our_NN->Eye_Offset] < Our_NN->Input[0][Our_NN->Eye_Offset + 4]) // First eye < Second eye
+  else if(our_nn->input[0][our_nn->eye_offset] < our_nn->input[0][our_nn->eye_offset + 4]) // First eye < Second eye
   {
-    Our_NN->Output[Our_NN->Num_Layers-1][0] = 0.25;
-    Our_NN->Output[Our_NN->Num_Layers-1][1] = 0; // FIXME: 0
-    Our_NN->Output[Our_NN->Num_Layers-1][2] = 0;
+    our_nn->output[our_nn->num_layers-1][0] = 0.25;
+    our_nn->output[our_nn->num_layers-1][1] = 0; // FIXME: 0
+    our_nn->output[our_nn->num_layers-1][2] = 0;
   }
   else
   {
-    Our_NN->Output[Our_NN->Num_Layers-1][0] = 1.0;
-    Our_NN->Output[Our_NN->Num_Layers-1][1] = 0.5;
-    Our_NN->Output[Our_NN->Num_Layers-1][2] = 0;
+    our_nn->output[our_nn->num_layers-1][0] = 1.0;
+    our_nn->output[our_nn->num_layers-1][1] = 0.5;
+    our_nn->output[our_nn->num_layers-1][2] = 0;
   }
 }
 
-void NN_Feedforward(neural_network* Our_NN)
+void nn_feedforward(neural_network* our_nn)
 {
   int i, j, k;
-  for(i = 0; i < Our_NN->Layer_Sizes[0]; ++i) // First layer is extracted as it has no weights leading to it
+  for(i = 0; i < our_nn->layer_sizes[0]; ++i) // First layer is extracted as it has no weights leading to it
   {
-    Our_NN->Output[0][i] = Our_NN->Input[0][i]; // FIXME: Who knows which this should be
-    //Our_NN->Output[0][i] = SIGMOID(Our_NN->Input[0][i]);
+    our_nn->output[0][i] = our_nn->input[0][i]; // FIXME: Who knows which this should be
+    //our_nn->output[0][i] = SIGMOID(our_nn->input[0][i]);
   }
 
-  for(i = 1; i < Our_NN->Num_Layers; ++i)
+  for(i = 1; i < our_nn->num_layers; ++i)
   {
-    for(j = 0; j < Our_NN->Layer_Sizes[i]; ++j)
+    for(j = 0; j < our_nn->layer_sizes[i]; ++j)
     {
-      Our_NN->Input[i][j] = 0;
-      for(k = 0; k < Our_NN->Layer_Sizes[i-1]; ++k) // Input value is equal to the sum of the connection weights * the output of the connected node
+      our_nn->input[i][j] = 0;
+      for(k = 0; k < our_nn->layer_sizes[i-1]; ++k) // input value is equal to the sum of the connection weights * the output of the connected node
       {
-        Our_NN->Input[i][j] += Our_NN->Output[i-1][k] * Our_NN->Weights[i][j][k];
+        our_nn->input[i][j] += our_nn->output[i-1][k] * our_nn->weights[i][j][k];
       }
-      Our_NN->Output[i][j] = SIGMOID(Our_NN->Input[i][j]);
+      our_nn->output[i][j] = SIGMOID(our_nn->input[i][j]);
     }
   }
 }
 
-void Update_Bots_NNs(world* Our_World)
+void update_bots_nns(world* our_world)
 {
   int b;
-  for(b = 0; b < Our_World->Num_Bots; ++b)
+  for(b = 0; b < our_world->num_bots; ++b)
   {
-    if(Our_World->Bots[b].Dead == TRUE)
+    if(our_world->bots[b].dead)
       continue;
 
-    NN_Set_Inputs(&Our_World->Bots[b]);
-    //NN_Basic(&Our_World->Bots[b].NN);
-    //NN_Intermediate(&Our_World->Bots[b].NN);
-    NN_Feedforward(&Our_World->Bots[b].NN);
+    nn_set_inputs(&our_world->bots[b]);
+    //nn_Basic(&our_world->bots[b].nn);
+    //nn_Intermediate(&our_world->bots[b].nn);
+    nn_feedforward(&our_world->bots[b].nn);
   }
 }
