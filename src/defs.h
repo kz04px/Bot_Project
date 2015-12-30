@@ -20,9 +20,40 @@
 #define NORMALISE_DEG(x) (x >= 360) ? x=x-360 : ((x < 0) ? x=x+360 : x)
 #define SIGMOID(x) 1/(1 + exp(-x))
 
+#define MAX_FRAMES_PER_GENERATION 5000
+
+// Bots
+#define MIN_VIEW_DIST     1.0
+#define MAX_VIEW_DIST     5.0
+#define MIN_VIEW_ANGLE    5
+#define MAX_VIEW_ANGLE    45
+#define MIN_SPIKE_LENGTH  1.0
+#define MAX_SPIKE_LENGTH  5.0
 #define BOT_START_ENERGY  500
 #define BOT_NUTRITION     200
+
+// Pellets
 #define PELLET_NUTRITION  200
+
+//#define DEBUG
+#define LOGGING
+//#define MUTATE_EYES
+//#define MUTATE_SPIKES
+
+#ifndef DEBUG
+  #define ASSERT(n)
+#else
+#define ASSERT(n) \
+  if(!(n)) \
+  { \
+    printf("\n%s - Failed\n", #n); \
+    printf("On %s\n", __DATE__); \
+    printf("At %s\n", __TIME__); \
+    printf("In File %s\n", __FILE__); \
+    printf("At Line %d\n", __LINE__); \
+    getchar(); \
+  }
+#endif
 
 typedef struct
 {
@@ -35,7 +66,7 @@ typedef struct
   double **input;
   double **output;
   double ***weights;
-} neural_network;
+} s_neural_network;
 
 typedef struct
 {
@@ -48,7 +79,7 @@ typedef struct
   float red;
   float green;
   float blue;
-} pellet;
+} s_pellet;
 
 typedef struct
 {
@@ -63,7 +94,7 @@ typedef struct
   float in_red;
   float in_green;
   float in_blue;
-} eye;
+} s_eye;
 
 typedef struct
 {
@@ -73,7 +104,7 @@ typedef struct
   //float red;
   //float green;
   //float blue;
-} spike;
+} s_spike;
 
 typedef struct
 {
@@ -92,14 +123,14 @@ typedef struct
   float green;
   float blue;
   // brain
-  neural_network nn;
+  s_neural_network nn;
   // eyes
   int num_eyes;
-  eye *eyes;
+  s_eye *eyes;
   // spikes
   int num_spikes;
-  spike *spikes;
-} bot;
+  s_spike *spikes;
+} s_bot;
 
 typedef struct
 {
@@ -117,23 +148,25 @@ typedef struct
   int pellets_added;
   int pellets_removed;
   int pellets_most;
+  int average_fitness;
+  int spike_uses;
   // bots
   int num_bots;
   int max_bots;
   int num_bots_alive;
   int num_parents;
-  bot* bots;
-  bot* bot_parents;
+  s_bot *bots;
+  s_bot *bot_parents;
   int* bot_ranks;
-  // pellets
+  // pellet
   int num_pellets;
   int max_pellets;
-  pellet* pellets;
+  s_pellet* pellets;
   // grid
   int grid_width;
   int grid_height;
   //grid** grid;
-} world;
+} s_world;
 
 typedef struct
 {
@@ -141,7 +174,7 @@ typedef struct
   HWND hstatistics;
   HDC hDC;
   HGLRC hRC;
-  world *world;
+  s_world *world;
   int display;
   int display_statistics;
   int w;
@@ -151,59 +184,61 @@ typedef struct
   float view_Y;
   float view_zoom;
   int quit;
-} render_parameters;
+} s_render_parameters;
 
 typedef struct
 {
-  world *world;
+  s_world *world;
   int pause;
   int quit;
   float delay;
-  int logging;
+  #ifdef LOGGING
   FILE* log_file;
-} simulation_parameters;
+  #endif
+} s_simulation_parameters;
 
-render_parameters Main;
-render_parameters viewer;
-simulation_parameters simulation;
+s_render_parameters main_display;
+s_render_parameters viewer_display;
+s_simulation_parameters simulation;
 
 float angle_difference(float x, float y);
 
 // world.c
-int world_init(world* our_world);
+int world_init(s_world *world);
 
 // simulation.c
-int simulation_init(world *our_world);
-int simulation_end(world* our_world);
+int simulation_init(s_world *world);
+int simulation_end(s_world *world);
+void simulate_frame(s_world* world);
 void simulate_world(void*);
 
 // bots.c
-void bot_ranks(world* our_world);
-void bots_breed_new_generation(world* our_world);
-int bot_create(bot* our_bot, float x, float y);
-int bot_dump(bot* our_bot);
-int bot_mutate(bot *our_bot);
-int bot_kill(world* our_world, int b);
-void draw_edge_bots(world *our_world);
-int bot_scramble(world* our_world, int n);
-int bot_remove(world* our_world, int n);
-int bot_add(world* our_world, float x, float y);
-int bot_find_closest(world* our_world, float x, float y);
+void bot_ranks(s_world *world);
+void bots_breed_new_generation(s_world *world);
+int bot_create(s_bot *bot, float x, float y);
+int bot_dump(s_bot *bot);
+int bot_mutate(s_bot *bot);
+int bot_kill(s_world *world, int b);
+void draw_edge_bots(s_world *world);
+int bot_scramble(s_world *world, int n);
+int bot_remove(s_world *world, int n);
+int bot_add(s_world *world, float x, float y);
+int bot_find_closest(s_world *world, float x, float y);
 
-// pellets.c
-int pellet_add(world* our_world, float x, float y);
-int pellet_remove(world* our_world, int p);
+// pellet.c
+int pellet_add(s_world *world, float x, float y);
+int pellet_remove(s_world *world, int p);
 
 // render.c
-int main_init(world *our_world, int w, int h);
-int viewer_init(world *our_world, int w, int h);
-void render_Main(void* a);
+int main_init(s_world *world, int w, int h);
+int viewer_init(s_world *world, int w, int h);
+void render_main(void* a);
 void render_viewer(void* a);
 
 // neural network.c
-int nn_mutate(neural_network* network);
-void nn_create(neural_network* nn);
-void update_bots_nns(world* our_world);
-void nn_random_weights(neural_network* our_nn, double min, double max);
+int nn_mutate(s_neural_network* network);
+void nn_create(s_neural_network* nn);
+void update_bots_nns(s_world *world);
+void nn_random_weights(s_neural_network* nn, double min, double max);
 
 #endif // DEFS_H_INCLUDED

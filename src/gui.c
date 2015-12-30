@@ -1,16 +1,16 @@
 #include "gui.h"
 
-int gui_create(HINSTANCE our_hInstance, HWND* main_hWnd, HWND* viewer_hWnd, HWND* main_hstatistics, HWND* viewer_hstatistics)
+int gui_create(HINSTANCE hInstance, HWND* main_hWnd, HWND* viewer_hWnd, HWND* main_hstatistics, HWND* viewer_hstatistics)
 {
-  windowwidth = 840;
-  windowheight = 480;
-  windowmin_width = 400;
-  windowmin_height = 300;
+  window_width = 840;
+  window_height = 480;
+  window_min_width = 400;
+  window_min_height = 300;
   char szClassName[] = "ClassName";
   WNDCLASSEX wincl;
 
   /* The Window structure */
-  wincl.hInstance = our_hInstance;
+  wincl.hInstance = hInstance;
   wincl.lpszClassName = szClassName;
   wincl.lpfnWndProc = WindowProcedure;
   wincl.style = CS_DBLCLKS;
@@ -37,11 +37,11 @@ int gui_create(HINSTANCE our_hInstance, HWND* main_hWnd, HWND* viewer_hWnd, HWND
        WS_OVERLAPPEDWINDOW,                   // default window
        CW_USEDEFAULT,                         // Windows decides the position
        CW_USEDEFAULT,                         // where the window ends up on the screen
-       windowwidth+18,                       // The program's width
-       windowheight+36,                      // and height in pixels
+       window_width+18,                       // The program's width
+       window_height+36,                      // and height in pixels
        HWND_DESKTOP,                          // The window is a child-window to desktop
        NULL,                                  // No menu
-       our_hInstance,                         // Program Instance handler
+       hInstance,                         // Program Instance handler
        NULL                                   // No Window Creation data
        );
 
@@ -52,15 +52,15 @@ int gui_create(HINSTANCE our_hInstance, HWND* main_hWnd, HWND* viewer_hWnd, HWND
        WS_CHILD | WS_VISIBLE,                 // default window
        200,                                   // Windows decides the position
        0,                                     // where the window ends up on the screen
-       windowwidth-200,                      // The program's width
-       windowheight,                         // and height in pixels
+       window_width-200,                      // The program's width
+       window_height,                         // and height in pixels
        hMain,                                 //
        NULL,                                  // No menu
-       our_hInstance,                         // Program Instance handler
+       hInstance,                         // Program Instance handler
        NULL                                   // No Window Creation data
        );
 
-  hviewer = CreateWindowEx(
+  hViewer = CreateWindowEx(
        0,                                     // Extended possibilites for variation
        szClassName,                           // Classname
        "viewer",                              // Title Text
@@ -72,7 +72,7 @@ int gui_create(HINSTANCE our_hInstance, HWND* main_hWnd, HWND* viewer_hWnd, HWND
        430+25,                                // and height in pixels
        hMain,                                 //
        NULL,                                  // No menu
-       our_hInstance,                         // Program Instance handler
+       hInstance,                         // Program Instance handler
        NULL                                   // No Window Creation data
        );
 
@@ -85,33 +85,33 @@ int gui_create(HINSTANCE our_hInstance, HWND* main_hWnd, HWND* viewer_hWnd, HWND
        30,                                    // where the window ends up on the screen
        300,                                   // The program's width
        300,                                   // and height in pixels
-       hviewer,                               //
+       hViewer,                               //
        NULL,                                  // No menu
-       our_hInstance,                         // Program Instance handler
+       hInstance,                         // Program Instance handler
        NULL                                   // No Window Creation data
        );
 
   // Start/pause button
-  hpauseButton = CreateWindow("button", BUTTON_1_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 0, 200, 80, hMain, (HMENU)BUTTON_1_ID, our_hInstance, NULL);
+  hpauseButton = CreateWindow("button", BUTTON_1_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 0, 200, 80, hMain, (HMENU)BUTTON_1_ID, hInstance, NULL);
   // Show/Hide viewer button
-  hviewerButton = CreateWindow("button", BUTTON_2_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 80, 200, 80, hMain, (HMENU)BUTTON_2_ID, our_hInstance, NULL);
+  hViewerButton = CreateWindow("button", BUTTON_2_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 80, 200, 80, hMain, (HMENU)BUTTON_2_ID, hInstance, NULL);
   // Delete button
-  hDeleteButton = CreateWindow("button", BUTTON_3_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 330, 150, 50, hviewer, (HMENU)BUTTON_3_ID, our_hInstance, NULL);
+  hDeleteButton = CreateWindow("button", BUTTON_3_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 330, 150, 50, hViewer, (HMENU)BUTTON_3_ID, hInstance, NULL);
   // scramble button
-  hscrambleButton = CreateWindow("button", BUTTON_4_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 150, 330, 150, 50, hviewer, (HMENU)BUTTON_4_ID, our_hInstance, NULL);
+  hscrambleButton = CreateWindow("button", BUTTON_4_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 150, 330, 150, 50, hViewer, (HMENU)BUTTON_4_ID, hInstance, NULL);
   // find button
-  hfindButton = CreateWindow("button", BUTTON_5_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 380, 150, 50, hviewer, (HMENU)BUTTON_5_ID, our_hInstance, NULL);
+  hfindButton = CreateWindow("button", BUTTON_5_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 380, 150, 50, hViewer, (HMENU)BUTTON_5_ID, hInstance, NULL);
   // Previous button
-  hPreviousButton = CreateWindow("button", BUTTON_6_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 0, 150, 30, hviewer, (HMENU)BUTTON_6_ID, our_hInstance, NULL);
+  hPreviousButton = CreateWindow("button", BUTTON_6_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 0, 150, 30, hViewer, (HMENU)BUTTON_6_ID, hInstance, NULL);
   // Next button
-  hNextButton = CreateWindow("button", BUTTON_7_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 150, 0, 150, 30, hviewer, (HMENU)BUTTON_7_ID, our_hInstance, NULL);
+  hNextButton = CreateWindow("button", BUTTON_7_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 150, 0, 150, 30, hViewer, (HMENU)BUTTON_7_ID, hInstance, NULL);
   // 'statistics' button
-  hstatisticsButton = CreateWindow("button", BUTTON_8_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 150, 380, 150, 50, hviewer, (HMENU)BUTTON_8_ID, our_hInstance, NULL);
+  hStatisticsButton = CreateWindow("button", BUTTON_8_TEXT_1, WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 150, 380, 150, 50, hViewer, (HMENU)BUTTON_8_ID, hInstance, NULL);
 
   // Main statistics box
-  *main_hstatistics = CreateWindow("Edit", "None", WS_CHILD | WS_VISIBLE | ES_MULTILINE, 0, 160, 200, 320, hMain, NULL, our_hInstance, NULL);
+  *main_hstatistics = CreateWindow("Edit", "None", WS_CHILD | WS_VISIBLE | ES_MULTILINE, 0, 160, 200, 320, hMain, NULL, hInstance, NULL);
   // viewer statistics box
-  *viewer_hstatistics = CreateWindow("Edit", "None", WS_CHILD | WS_VISIBLE | ES_MULTILINE, 300, 0, 300, 430, hviewer, NULL, our_hInstance, NULL);
+  *viewer_hstatistics = CreateWindow("Edit", "None", WS_CHILD | WS_VISIBLE | ES_MULTILINE, 300, 0, 300, 430, hViewer, NULL, hInstance, NULL);
 
   return 0;
 }

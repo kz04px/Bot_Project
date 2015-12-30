@@ -30,5 +30,7 @@ Controls:
    rb  - Drag
    sw  - Zoom
 
-Author:
-  Twipply
+Neural Networks:
+  Output[0] - Fowards/backwards value
+  Output[1] - Rotation value
+  Output[2] - Spike value

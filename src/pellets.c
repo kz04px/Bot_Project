@@ -1,7 +1,9 @@
 #include "defs.h"
 
-void draw_pellet(pellet* p)
+void draw_pellet(s_pellet* p)
 {
+  ASSERT(p != NULL);
+  
   glPushMatrix();
   glColor3f(p->red, p->green, p->blue);
   glTranslatef(p->x, p->y, 0.0);
@@ -14,54 +16,72 @@ void draw_pellet(pellet* p)
   glPopMatrix();
 }
 
-void draw_pellets(world *our_world)
+void draw_pellets(s_world *world)
 {
+  ASSERT(world != NULL);
+  
   int p;
-  for(p = 0; p < our_world->num_pellets; ++p)
+  for(p = 0; p < world->num_pellets; ++p)
   {
-    draw_pellet(&our_world->pellets[p]);
+    draw_pellet(&world->pellets[p]);
   }
 }
 
-int pellet_remove(world* our_world, int p)
+int pellet_remove(s_world *world, int p)
 {
-  if(our_world->num_pellets < 1)
+  ASSERT(world != NULL);
+  
+  if(world->num_pellets < 1)
+  {
     return 0;
+  }
 
-  our_world->pellets[p] = our_world->pellets[our_world->num_pellets-1];
+  world->pellets[p] = world->pellets[world->num_pellets-1];
   // world stats
-  our_world->pellets_removed++;
-  our_world->num_pellets--;
+  world->pellets_removed++;
+  world->num_pellets--;
   return 1;
 }
 
-int pellet_add(world* our_world, float x, float y)
+int pellet_add(s_world *world, float x, float y)
 {
-  if(our_world->num_pellets >= our_world->max_pellets)
+  ASSERT(world != NULL);
+  
+  if(world->num_pellets >= world->max_pellets)
+  {
     return 0;
+  }
 
   if(x < 0)
-    our_world->pellets[our_world->num_pellets].x = RAND_BETWEEN(0.0, our_world->width);
+  {
+    world->pellets[world->num_pellets].x = RAND_BETWEEN(0.0, world->width);
+  }
   else
-    our_world->pellets[our_world->num_pellets].x = x;
+  {
+    world->pellets[world->num_pellets].x = x;
+  }
 
   if(y < 0)
-    our_world->pellets[our_world->num_pellets].y = RAND_BETWEEN(0.0, our_world->height);
+  {
+    world->pellets[world->num_pellets].y = RAND_BETWEEN(0.0, world->height);
+  }
   else
-    our_world->pellets[our_world->num_pellets].y = y;
+  {
+    world->pellets[world->num_pellets].y = y;
+  }
 
-  our_world->pellets[our_world->num_pellets].nutrition = PELLET_NUTRITION;
-  //our_world->pellets[our_world->num_pellets].energy = PELLET_START_ENERGY;
-  //our_world->pellets[our_world->num_pellets].energy = PELLET_ENERGY;
-  //our_world->pellets[our_world->num_pellets].age = 0;
-  our_world->pellets[our_world->num_pellets].red = 1.0;
-  our_world->pellets[our_world->num_pellets].green = 1.0;
-  our_world->pellets[our_world->num_pellets].blue = 0.0;
+  world->pellets[world->num_pellets].nutrition = PELLET_NUTRITION;
+  //world->pellets[world->num_pellets].energy = PELLET_START_ENERGY;
+  //world->pellets[world->num_pellets].energy = PELLET_ENERGY;
+  //world->pellets[world->num_pellets].age = 0;
+  world->pellets[world->num_pellets].red = 1.0;
+  world->pellets[world->num_pellets].green = 1.0;
+  world->pellets[world->num_pellets].blue = 0.0;
   // world stats
-  our_world->pellets_added++;
-  our_world->num_pellets++;
+  world->pellets_added++;
+  world->num_pellets++;
 
-  //printf("add_pellet() %.4g %.4g\n", our_world->pellets[our_world->num_pellets].x, our_world->pellets[our_world->num_pellets].y);
+  //printf("add_pellet() %.4g %.4g\n", world->pellets[world->num_pellets].x, world->pellets[world->num_pellets].y);
 
   return 1;
 }

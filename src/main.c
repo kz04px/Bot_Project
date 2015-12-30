@@ -2,49 +2,79 @@
 #include "gui.h"
 #include "defs.h"
 
-world *our_world = NULL;
+s_world *world = NULL;
 
 int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow)
 {
-
-  // gui Stuff
-  gui_create(hThisInstance, &Main.hWnd, &viewer.hWnd, &Main.hstatistics, &viewer.hstatistics);
+  // gui stuff
+  gui_create(hThisInstance, &main_display.hWnd, &viewer_display.hWnd, &main_display.hstatistics, &viewer_display.hstatistics);
 
   // Show the main window
   ShowWindow(hMain, nCmdShow);
+  
+  // Show the console
+  AllocConsole();
+  freopen("CONIN$", "r", stdin);
+  freopen("CONOUT$", "w", stdout);
+  freopen("CONOUT$", "w", stderr);
 
   // Controls
   printf("Keyboard:\n");
   printf(" 1   - No tool\n");
-  printf(" 2   - pellet adder tool\n");
-  printf(" 3   - bot adder tool\n");
-  printf(" 4   - bot Selector tool\n");
-  printf(" v   - Open/close viewer\n");
-  printf(" sb  - Start/pause\n");
-  printf(" esc - close\n\n");
+  printf(" 2   - Pellet adder tool\n");
+  printf(" 3   - Bot adder tool\n");
+  printf(" 4   - Bot selector tool\n");
+  printf(" v   - Open/Close viewer\n");
+  printf(" sb  - Start/Pause\n");
+  printf(" esc - Close\n");
+  printf("\n");
 
   printf("Mouse:\n");
   printf(" lb  - Use tool\n");
   printf(" rb  - Drag\n");
-  printf(" sw  - zoom\n\n");
+  printf(" sw  - Zoom\n");
+  printf("\n");
 
   // init stuff
-  our_world = (world*) malloc(1*sizeof(world));
-  world_init(our_world);
-  main_init(our_world, windowwidth-200, windowheight);
-  viewer_init(our_world, 300, 300);
-  simulation_init(our_world);
+  world = (s_world *)malloc(1*sizeof(s_world));
+  world_init(world);
+  main_init(world, window_width-200, window_height);
+  viewer_init(world, 300, 300);
+  simulation_init(world);
   
   // create scenario
   int i;
   for(i = 0; i < 20; ++i)
-    bot_add(our_world, -1, -1);
+  {
+    bot_add(world, -1, -1);
+  }
   for(i = 0; i < 150; ++i)
-    pellet_add(our_world, -1, -1);
+  {
+    pellet_add(world, -1, -1);
+  }
 
+  // perft
+  int r;
+  int num_frames = 50000;
+  double time_taken;
+  time_t start = clock();
+  for(r = 1; r <= num_frames; ++r)
+  {
+    simulate_frame(simulation.world);
+  }
+  time_taken = ((double)clock()-start)/CLOCKS_PER_SEC;
+  printf("\n");
+  printf("Results:\n");
+  printf("Frames: %i\n", num_frames);
+  printf("Total time: %.3fs\n", time_taken);
+  printf("Time per frame: %.3fns\n", (1000000.0)*time_taken/num_frames);
+  printf("\n");
+  //getchar();
+  //return 0;
+  
   // Threads
-  hThreads[0] = (HANDLE)_beginthread(render_Main, 0, &Main);
-  hThreads[1] = (HANDLE)_beginthread(render_viewer, 0, &viewer);
+  hThreads[0] = (HANDLE)_beginthread(render_main, 0, &main_display);
+  hThreads[1] = (HANDLE)_beginthread(render_viewer, 0, &viewer_display);
   hThreads[2] = (HANDLE)_beginthread(simulate_world, 0, &simulation);
   num_threads = 3;
 
@@ -56,15 +86,15 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
   }
 
   // close stuff
-  Main.quit = 1;
-  viewer.quit = 1;
+  main_display.quit = 1;
+  viewer_display.quit = 1;
   simulation.quit = 1;
   WaitForMultipleObjects(num_threads, hThreads, 1, INFINITE);
-  simulation_end(our_world);
+  simulation_end(world);
   return 0;
 }
 
-int Move_Camera = 0;
+int move_camera = 0;
 int xPos, yPos;
 float aaa, bbb;
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -72,10 +102,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
   switch(message)
   {
     case WM_CLOSE:
-      if(hwnd == hviewer)
+      if(hwnd == hViewer)
       {
-        ShowWindow(hviewer, SW_HIDE);
-        viewer.display = 0;
+        ShowWindow(hViewer, SW_HIDE);
+        viewer_display.display = 0;
       }
       else
       {
@@ -86,14 +116,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     case WM_SIZE:
       if(hwnd == hMain)
       {
-        windowwidth = LOWORD(lParam);
-        windowheight = HIWORD(lParam);
-        if(windowwidth < windowmin_width) {windowwidth = windowmin_width;}
-        if(windowheight < windowmin_height) {windowheight = windowmin_height;}
-        Main.w = windowwidth-200;
-        Main.h = windowheight;
-        Main.r = (float)Main.h/Main.w;
-        MoveWindow(Main.hWnd, 200,0, windowwidth,windowheight, 1);
+        window_width = LOWORD(lParam);
+        window_height = HIWORD(lParam);
+        if(window_width < window_min_width) {window_width = window_min_width;}
+        if(window_height < window_min_height) {window_height = window_min_height;}
+        main_display.w = window_width-200;
+        main_display.h = window_height;
+        main_display.r = (float)main_display.h/main_display.w;
+        MoveWindow(main_display.hWnd, 200,0, window_width,window_height, 1);
       }
       break;
     case WM_COMMAND:
@@ -103,81 +133,91 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         case BUTTON_1_ID:
           simulation.pause = 1-simulation.pause;
           if(simulation.pause)
+          {
             SetWindowText(hpauseButton, BUTTON_1_TEXT_1);
+          }
           else
+          {
             SetWindowText(hpauseButton, BUTTON_1_TEXT_2);
+          }
           break;
         case BUTTON_2_ID:
-          viewer.display = 1-viewer.display;
-          if(viewer.display)
-            ShowWindow(hviewer, SW_SHOW);
+          viewer_display.display = 1-viewer_display.display;
+          if(viewer_display.display)
+          {
+            ShowWindow(hViewer, SW_SHOW);
+          }
           else
-            ShowWindow(hviewer, SW_HIDE);
+          {
+            ShowWindow(hViewer, SW_HIDE);
+          }
           break;
         case BUTTON_3_ID:
-          //printf("remove bot: %i\n", our_world->selected);
-          //bot_remove(our_world, our_world->selected);
+          //printf("remove s_bot: %i\n", world->selected);
+          //bot_remove(world, world->selected);
 
-          printf("kill bot: %i\n", our_world->selected);
-          bot_kill(our_world, our_world->selected);
+          printf("kill bot: %i\n", world->selected);
+          bot_kill(world, world->selected);
 
-          //our_world->selected = -1;
-          if(our_world->selected >= our_world->num_bots)
-            our_world->selected--;
+          //world->selected = -1;
+          if(world->selected >= world->num_bots)
+          {
+            world->selected--;
+          }
 
           break;
         case BUTTON_4_ID:
-          printf("scramble bot: %i\n", our_world->selected);
-          bot_scramble(our_world, our_world->selected);
-          bot_mutate(&our_world->bots[our_world->selected]);
+          printf("scramble bot: %i\n", world->selected);
+          bot_scramble(world, world->selected);
+          bot_mutate(&world->bots[world->selected]);
           break;
         case BUTTON_5_ID:
-          if(our_world->selected < 0) break;
-          printf("find bot: %i\n", our_world->selected);
-          Main.view_X = our_world->bots[our_world->selected].x;
-          Main.view_Y = our_world->bots[our_world->selected].y;
+          if(world->selected < 0) break;
+          printf("find bot: %i\n", world->selected);
+          main_display.view_X = world->bots[world->selected].x;
+          main_display.view_Y = world->bots[world->selected].y;
           break;
         case BUTTON_6_ID: // 'Previous' button
-          if(our_world->selected > 0) our_world->selected--;
+          if(world->selected > 0) world->selected--;
           break;
         case BUTTON_7_ID: // 'Next' button
-          if(our_world->selected < our_world->num_bots-1) our_world->selected++;
+          if(world->selected < world->num_bots-1) world->selected++;
           break;
         case BUTTON_8_ID: // 'statistics' button
-          viewer.display_statistics = 1-viewer.display_statistics;
-          if(viewer.display_statistics)
-            SetWindowPos(hviewer,0,0,0,600+5,430+25,SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);
+          viewer_display.display_statistics = 1-viewer_display.display_statistics;
+          if(viewer_display.display_statistics)
+            SetWindowPos(hViewer,0,0,0,600+5,430+25,SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);
           else
-            SetWindowPos(hviewer,0,0,0,300+5,430+25,SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);
+            SetWindowPos(hViewer,0,0,0,300+5,430+25,SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);
           break;
         default:
           break;
       }
       break;
     case WM_LBUTTONDOWN:
-      Move_Camera = 0;
-      if(hwnd == Main.hWnd)
+      move_camera = 0;
+      if(hwnd == main_display.hWnd)
       {
-        aaa = Main.view_X + 2.0*((float)LOWORD(lParam)/Main.w-0.5)/Main.view_zoom;
-        bbb = Main.view_Y - 2.0*((float)HIWORD(lParam)/Main.h-0.5)*Main.r/Main.view_zoom;
+        aaa = main_display.view_X + 2.0*((float)LOWORD(lParam)/main_display.w-0.5)/main_display.view_zoom;
+        bbb = main_display.view_Y - 2.0*((float)HIWORD(lParam)/main_display.h-0.5)*main_display.r/main_display.view_zoom;
       }
-      else if(hwnd == viewer.hWnd)
+      else if(hwnd == viewer_display.hWnd)
       {
-        aaa = our_world->bots[our_world->selected].x + 2.0*((float)LOWORD(lParam)/viewer.w-0.5)/viewer.view_zoom;
-        bbb = our_world->bots[our_world->selected].y - 2.0*((float)HIWORD(lParam)/viewer.h-0.5)*viewer.r/viewer.view_zoom;
+        aaa = world->bots[world->selected].x + 2.0*((float)LOWORD(lParam)/viewer_display.w-0.5)/viewer_display.view_zoom;
+        bbb = world->bots[world->selected].y - 2.0*((float)HIWORD(lParam)/viewer_display.h-0.5)*viewer_display.r/viewer_display.view_zoom;
       }
       switch(current_tool)
       {
         case NO_TOOL:
           break;
         case PELLET_ADDER:
-          pellet_add(our_world, aaa, bbb);
+          pellet_add(world, aaa, bbb);
           break;
         case BOT_ADDER:
-          bot_add(our_world, aaa, bbb);
+          bot_add(world, aaa, bbb);
           break;
         case BOT_SELECTOR:
-          our_world->selected = bot_find_closest(our_world, aaa, bbb);
+          world->selected = bot_find_closest(world, aaa, bbb);
           break;
         default:
           printf("Unknown tool selected (%i)\n", current_tool);
@@ -186,27 +226,27 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
       }
       break;
     case WM_RBUTTONDOWN:
-      if(hwnd == Main.hWnd)
+      if(hwnd == main_display.hWnd)
       {
-        Move_Camera = 1;
+        move_camera = 1;
         xPos = LOWORD(lParam);
         yPos = HIWORD(lParam);
       }
       break;
     case WM_RBUTTONUP:
-      Move_Camera = 0;
+      move_camera = 0;
       break;
     case WM_MOUSEMOVE:
-      if(Move_Camera)
+      if(move_camera)
       {
-        Main.view_X +=        2.5*(xPos - LOWORD(lParam))/windowwidth  /Main.view_zoom;
-        Main.view_Y -= Main.r*2.5*(yPos - HIWORD(lParam))/windowheight /Main.view_zoom;
+        main_display.view_X +=        2.5*(xPos - LOWORD(lParam))/window_width  /main_display.view_zoom;
+        main_display.view_Y -= main_display.r*2.5*(yPos - HIWORD(lParam))/window_height /main_display.view_zoom;
 
         // Boundary check
-        if(Main.view_X < 0)                       Main.view_X = 0;
-        else if(Main.view_X > our_world->width)   Main.view_X = our_world->width;
-        if(Main.view_Y < 0)                       Main.view_Y = 0;
-        else if(Main.view_Y > our_world->height)  Main.view_Y = our_world->height;
+             if(main_display.view_X < 0)             {main_display.view_X = 0;}
+        else if(main_display.view_X > world->width)  {main_display.view_X = world->width;}
+             if(main_display.view_Y < 0)             {main_display.view_Y = 0;}
+        else if(main_display.view_Y > world->height) {main_display.view_Y = world->height;}
 
         xPos = LOWORD(lParam);
         yPos = HIWORD(lParam);
@@ -214,9 +254,13 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
       break;
     case WM_MOUSEWHEEL:
       if((short)HIWORD(wParam) > 0)
-        Main.view_zoom *= 1.1;
+      {
+        main_display.view_zoom *= 1.1;
+      }
       else
-        Main.view_zoom /= 1.1;
+      {
+        main_display.view_zoom /= 1.1;
+      }
       break;
     case WM_KEYDOWN:
       switch(wParam)
@@ -237,7 +281,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
           SendMessage(hMain, WM_COMMAND, BUTTON_2_ID, 0);
           break;
         case 'Z':
-          if(bot_dump(&our_world->bots[0])) printf("bot 0 dumped\n");
+          if(bot_dump(&world->bots[world->selected])) 
+          {
+            printf("Bot %i dumped\n", world->selected);
+          }
           break;
         case 'T':
           simulation.delay = 0;
@@ -265,7 +312,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
           printf("Tool: BOT_SELECTOR (%i)\n", current_tool);
           break;
         default:
-          printf("Key: %i\n", wParam);
           break;
       }
       break;
